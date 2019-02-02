@@ -1,7 +1,7 @@
 # Личный проект «Дела в Порядке»
 
 * Студент: [Aleksandr Malinin](https://up.htmlacademy.ru/php/8/user/321121).
-* Наставник: `Неизвестно`.
+* Наставник: [Денис Байдаров](https://up.htmlacademy.ru/php/8/user/7956).
 
 ---
 
