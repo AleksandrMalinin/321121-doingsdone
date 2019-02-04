@@ -48,8 +48,8 @@ $tasks_list = [
 function count_tasks_quantity($list, $project) {
     $tasks_quantity = 0;
 
-    foreach ($list as $key => $value) {
-        if ($value['category'] == $project) {
+    foreach ($list as $item) {
+        if ($item['category'] === $project) {
             $tasks_quantity++;
         }
     }
@@ -102,10 +102,10 @@ function count_tasks_quantity($list, $project) {
 
                 <nav class="main-navigation">
                     <ul class="main-navigation__list">
-                        <?php foreach ($projects as $key => $value): ?>
+                        <?php foreach ($projects as $project): ?>
                         <li class="main-navigation__list-item">
-                            <a class="main-navigation__list-item-link" href="#"><?= $value; ?></a>
-                            <span class="main-navigation__list-item-count"><?= count_tasks_quantity($tasks_list, $value); ?></span>
+                            <a class="main-navigation__list-item-link" href="#"><?= $project; ?></a>
+                            <span class="main-navigation__list-item-count"><?= count_tasks_quantity($tasks_list, $project); ?></span>
                         </li>
                         <?php endforeach ?>
                     </ul>
@@ -140,13 +140,13 @@ function count_tasks_quantity($list, $project) {
                 </div>
 
                 <table class="tasks">
-                    <?php foreach ($tasks_list as $key => $value): ?>
-                        <?php if ($show_complete_tasks or !$value['done']): ?>
-                        <tr class="tasks__item task <?php if ($value['done']): ?>task--completed<?php endif ?>">
+                    <?php foreach ($tasks_list as $task): ?>
+                        <?php if ($show_complete_tasks or !$task['done']): ?>
+                        <tr class="tasks__item task <?php if ($task['done']): ?>task--completed<?php endif ?>">
                             <td class="task__select">
                                 <label class="checkbox task__checkbox">
-                                    <input class="checkbox__input visually-hidden task__checkbox" type="checkbox" value="1" <?php if ($value['done']): ?>checked<?php endif ?>>
-                                    <span class="checkbox__text"><?=$value['title']; ?></span>
+                                    <input class="checkbox__input visually-hidden task__checkbox" type="checkbox" value="1" <?php if ($task['done']): ?>checked<?php endif ?>>
+                                    <span class="checkbox__text"><?=$task['title']; ?></span>
                                 </label>
                             </td>
 
@@ -154,7 +154,7 @@ function count_tasks_quantity($list, $project) {
                                 <a class="download-link" href="#">Home.psd</a>
                             </td>
 
-                            <td class="task__date"><?=$value['date']; ?></td>
+                            <td class="task__date"><?=$task['date']; ?></td>
                         </tr>
                         <?php endif ?>
                     <?php endforeach ?>
