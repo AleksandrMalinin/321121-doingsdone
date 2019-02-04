@@ -141,7 +141,7 @@ function count_tasks_quantity($list, $project) {
 
                 <table class="tasks">
                     <?php foreach ($tasks_list as $task): ?>
-                        <?php if ($show_complete_tasks or !$task['done']): ?>
+                        <?php if ($show_complete_tasks || !$task['done']): ?>
                         <tr class="tasks__item task <?php if ($task['done']): ?>task--completed<?php endif ?>">
                             <td class="task__select">
                                 <label class="checkbox task__checkbox">
