@@ -6,7 +6,7 @@ ini_set('display_errors', 1);
 $show_complete_tasks = rand(0, 1);
 
 $projects = ['Входящие', 'Учёба', 'Работа', 'Домашние дела', 'Авто'];
-$tasks_list = [
+$tasks = [
     [
         'title' => 'Собеседование в IT компании',
         'date' => '01.12.2019',
@@ -105,7 +105,7 @@ function count_tasks_quantity($list, $project) {
                         <?php foreach ($projects as $project): ?>
                         <li class="main-navigation__list-item">
                             <a class="main-navigation__list-item-link" href="#"><?= $project; ?></a>
-                            <span class="main-navigation__list-item-count"><?= count_tasks_quantity($tasks_list, $project); ?></span>
+                            <span class="main-navigation__list-item-count"><?= count_tasks_quantity($tasks, $project); ?></span>
                         </li>
                         <?php endforeach ?>
                     </ul>
@@ -140,7 +140,7 @@ function count_tasks_quantity($list, $project) {
                 </div>
 
                 <table class="tasks">
-                    <?php foreach ($tasks_list as $task): ?>
+                    <?php foreach ($tasks as $task): ?>
                         <?php if ($show_complete_tasks || !$task['done']): ?>
                         <tr class="tasks__item task <?php if ($task['done']): ?>task--completed<?php endif ?>">
                             <td class="task__select">
