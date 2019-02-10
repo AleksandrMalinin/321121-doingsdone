@@ -28,7 +28,7 @@ function count_tasks_quantity($list, $project) {
     return $tasks_quantity;
 }
 
-function filterContent($str) {
+function filter_content($str) {
     $text = strip_tags($str);
 
 	return $text;
