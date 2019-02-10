@@ -35,6 +35,7 @@ function filterContent($str) {
 }
 
 function check_urgency($str) {
+    // проверяет на наличие даты
     if (strpos($str, '.')) {
         $task_deadline_str = $str;
 
