@@ -2,7 +2,7 @@
     <td class="task__select">
         <label class="checkbox task__checkbox">
             <input class="checkbox__input visually-hidden task__checkbox" type="checkbox" value="1" <?php if ($task['done']): ?>checked<?php endif ?>>
-            <span class="checkbox__text"><?=$task['title']; ?></span>
+            <span class="checkbox__text"><?= filterContent($task['title']); ?></span>
         </label>
     </td>
 
@@ -10,5 +10,5 @@
         <a class="download-link" href="#">Home.psd</a>
     </td>
 
-    <td class="task__date"><?=$task['date']; ?></td>
+    <td class="task__date"><?= filterContent($task['date']); ?></td>
 </tr>
