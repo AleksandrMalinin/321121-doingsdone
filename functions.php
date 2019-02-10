@@ -33,3 +33,23 @@ function filterContent($str) {
 
 	return $text;
 }
+
+function check_urgency($str) {
+    if (strpos($str, '.')) {
+        $task_deadline_str = $str;
+
+        // текущий timestamp
+        $now_ts = time();
+
+        // timestamp для дедлайна
+        $task_deadline_ts = strtotime($task_deadline_str);
+        $time_diff = $task_deadline_ts - $now_ts;
+        $hours_to_task_deadline = floor($time_diff / 60 / 60);
+
+        if ($hours_to_task_deadline <= 24) {
+            return true;
+        }
+    }
+
+    return false;
+}
