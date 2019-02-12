@@ -4,7 +4,7 @@ function include_template($name, $data) {
     $result = '';
 
     if (!is_readable($name)) {
-        return $result;
+        return '<div class="error-message">Template is not found</div>';
     }
 
     ob_start();
@@ -26,10 +26,4 @@ function count_tasks_quantity($list, $project) {
     }
 
     return $tasks_quantity;
-}
-
-function filter_content($str) {
-    $text = strip_tags($str);
-
-	return $text;
 }
