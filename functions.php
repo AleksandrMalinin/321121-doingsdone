@@ -35,8 +35,10 @@ function filter_content($str) {
 }
 
 function check_urgency($str) {
+    $urgency = false;
+
     // проверяет на наличие даты
-    if (strpos($str, '.')) {
+    if ($str) {
         $task_deadline_str = $str;
 
         // текущий timestamp
@@ -48,9 +50,9 @@ function check_urgency($str) {
         $hours_to_task_deadline = floor($time_diff / 60 / 60);
 
         if ($hours_to_task_deadline <= 24) {
-            return true;
+            $urgency = true;
         }
     }
 
-    return false;
+    return $urgency;
 }
