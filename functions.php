@@ -27,3 +27,26 @@ function count_tasks_quantity($list, $project) {
 
     return $tasks_quantity;
 }
+
+function check_urgency($str) {
+    $urgency = false;
+
+    // проверяет на наличие даты
+    if ($str) {
+        $task_deadline_str = $str;
+
+        // текущий timestamp
+        $now_ts = time();
+
+        // timestamp для дедлайна
+        $task_deadline_ts = strtotime($task_deadline_str);
+        $time_diff = $task_deadline_ts - $now_ts;
+        $hours_to_task_deadline = floor($time_diff / 60 / 60);
+
+        if ($hours_to_task_deadline <= 24) {
+            $urgency = true;
+        }
+    }
+
+    return $urgency;
+}
