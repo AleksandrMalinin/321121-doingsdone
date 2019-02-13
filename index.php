@@ -2,8 +2,8 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-require_once('./functions.php');
 require_once('./data.php');
+require_once('./functions.php');
 
 date_default_timezone_set("Europe/Moscow");
 setlocale(LC_ALL, 'ru_RU');
