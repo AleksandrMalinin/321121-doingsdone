@@ -28,9 +28,9 @@ WHERE user_id = 1;
 SELECT * FROM tasks
 WHERE project_id = 4;
 
--- Пометить задачу как выполненную у задачи с названием 'Собеседование в IT компании'
+-- Пометить задачу как выполненную у задачи с id 1
 UPDATE tasks SET status = 1
-WHERE name = 'Собеседование в IT компании';
+WHERE id = 1;
 
 -- Обновить название задачи с id 6 на 'Заказать бургеры'
 UPDATE tasks SET name = 'Заказать бургеры'
