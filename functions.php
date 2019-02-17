@@ -1,4 +1,6 @@
 <?php
+require_once('./mysql_helper.php');
+
 function include_template($name, $data) {
     $name = 'templates/' . $name;
     $result = '';
@@ -20,7 +22,7 @@ function count_tasks_quantity($list, $project) {
     $tasks_quantity = 0;
 
     foreach ($list as $item) {
-        if ($item['category'] === $project) {
+        if ($item['project_id'] === $project) {
             $tasks_quantity++;
         }
     }
@@ -49,4 +51,24 @@ function check_urgency($str) {
     }
 
     return $urgency;
+}
+
+function get_data($connect, $sql, $user = []) {
+    if (!$connect) {
+        $error = mysqli_connect_error();
+        print('Connection error: ' . $error);
+    } else {
+        $stmt = db_get_prepare_stmt($connect, $sql, [$user]);
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+
+        if (!$result) {
+            $error = mysqli_error($connect);
+            print('MYSQL error: ' . $error);
+        } else {
+            $data = mysqli_fetch_all($res);
+        }
+    }
+
+    return $data;
 }
