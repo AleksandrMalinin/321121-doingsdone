@@ -66,7 +66,7 @@ function get_data($connect, $sql, $user = []) {
             $error = mysqli_error($connect);
             print('MYSQL error: ' . $error);
         } else {
-            $data = mysqli_fetch_all($res);
+            $data = mysqli_fetch_all($result, MYSQLI_ACCOC);
         }
     }
 
