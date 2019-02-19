@@ -18,11 +18,11 @@ function include_template($name, $data) {
     return $result;
 }
 
-function count_tasks_quantity($list, $project) {
+function count_tasks_quantity($list, $project_id) {
     $tasks_quantity = 0;
 
     foreach ($list as $item) {
-        if ($item['project_id'] === $project) {
+        if ($item['project_id'] === $project_id) {
             $tasks_quantity++;
         }
     }
@@ -30,11 +30,11 @@ function count_tasks_quantity($list, $project) {
     return $tasks_quantity;
 }
 
-function check_urgency($str) {
+function check_urgency($str, $status) {
     $urgency = false;
 
-    // проверяет на наличие даты
-    if ($str) {
+    // проверяет на наличие даты и статус задачи
+    if ($str && !$status) {
         $task_deadline_str = $str;
 
         // текущий timestamp
@@ -66,7 +66,7 @@ function get_data($connect, $sql, $user = []) {
             $error = mysqli_error($connect);
             print('MYSQL error: ' . $error);
         } else {
-            $data = mysqli_fetch_all($result, MYSQLI_ACCOC);
+            $data = mysqli_fetch_all($result, 3);
         }
     }
 
