@@ -18,25 +18,11 @@ function include_template($name, $data) {
     return $result;
 }
 
-function count_tasks_quantity($list, $project_id) {
-    $tasks_quantity = 0;
-
-    foreach ($list as $item) {
-        if ($item['project_id'] === $project_id) {
-            $tasks_quantity++;
-        }
-    }
-
-    return $tasks_quantity;
-}
-
-function check_urgency($str, $status) {
+function check_urgency($task_deadline_str, $status) {
     $urgency = false;
 
     // проверяет на наличие даты и статус задачи
-    if ($str && !$status) {
-        $task_deadline_str = $str;
-
+    if ($task_deadline_str && !$status) {
         // текущий timestamp
         $now_ts = time();
 
@@ -53,7 +39,10 @@ function check_urgency($str, $status) {
     return $urgency;
 }
 
-function get_data($connect, $sql, $user = []) {
+// получает массив данных
+function get_data($connect, $sql, $user = [], $bool) {
+    $data = null;
+
     if (!$connect) {
         $error = mysqli_connect_error();
         print('Connection error: ' . $error);
@@ -66,9 +55,40 @@ function get_data($connect, $sql, $user = []) {
             $error = mysqli_error($connect);
             print('MYSQL error: ' . $error);
         } else {
-            $data = mysqli_fetch_all($result, 3);
+            $data = check_multiline_data($bool, $data, $result);
         }
     }
 
     return $data;
+}
+
+// подбирает функцию в зависимости от того многострочные даннные или нет
+function check_multiline_data($bool, $data, $result) {
+    if ($bool) {
+        $data = mysqli_fetch_all($result, MYSQLI_ASSOC);
+    } else {
+        $data = mysqli_fetch_row($result);
+    }
+
+    return $data;
+}
+
+// делает запрос для проектов
+function make_projects_request() {
+    return $sql_projects = 'SELECT * FROM projects WHERE user_id = ?';
+}
+
+// делает запрос для задач
+function make_tasks_request() {
+    return $sql_tasks = 'SELECT * FROM tasks WHERE user_id = ?';
+}
+
+// делает запрос для юзеров
+function make_users_request() {
+    return $sql_users = 'SELECT name FROM users WHERE id = ?';
+}
+
+// делает запрос для количества невыполненных задач по каждому проекту
+function make_tasks_quantity_request() {
+    return $sql_tasks_quantity = 'SELECT COUNT(*) FROM tasks t JOIN projects p ON p.id = t.project_id WHERE t.status = 0 && t.user_id = ? GROUP BY project_id';
 }
