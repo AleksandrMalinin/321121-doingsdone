@@ -23,8 +23,6 @@
 
 <table class="tasks">
     <?php foreach ($tasks as $task): ?>
-        <?php if ($show_complete_tasks || !$task['status']): ?>
-            <?=include_template('task.php', ['task' => $task]); ?>
-        <?php endif ?>
+        <?=include_template('task.php', ['task' => $task]); ?>
     <?php endforeach ?>
 </table>

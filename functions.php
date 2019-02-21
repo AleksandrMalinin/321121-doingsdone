@@ -80,9 +80,13 @@ function get_projects_data($connect, $user) {
     return get_data($connect, $sql_projects, $user, true);
 }
 
-// делает запрос для задач
-function get_tasks_data($connect, $user) {
-    $sql_tasks = 'SELECT * FROM tasks WHERE user_id = ?';
+// делает запрос для задач, определяет тип для вывода (выполненная / невыполненная)
+function get_tasks_data($connect, $user, $bool) {
+    if ($bool) {
+        $sql_tasks = 'SELECT * FROM tasks WHERE user_id = ?';
+    } else {
+        $sql_tasks = 'SELECT * FROM tasks WHERE user_id = ? && status =' . $bool;
+    }
 
     return get_data($connect, $sql_tasks, $user, true);
 }

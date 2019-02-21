@@ -18,7 +18,7 @@ $user_id = 3;
 $initial_projects = get_projects_data($connect, $user_id);
 
 // Получаем массив задач
-$tasks = get_tasks_data($connect, $user_id);
+$tasks = get_tasks_data($connect, $user_id, $show_complete_tasks);
 
 // Получаем имя текущего пользователя
 $users = get_users_data($connect, $user_id);
