@@ -43,11 +43,7 @@
                 <nav class="main-navigation">
                     <ul class="main-navigation__list">
                         <?php foreach ($projects as $project): ?>
-                            <?php foreach ($tasks_quantity as $task_quantity): ?>
-                                <?php foreach ($task_quantity as $value): ?>
-                                    <?=include_template('project.php', ['project' => $project, 'value' => $value]); ?>
-                                <?php endforeach ?>
-                            <?php endforeach ?>
+                            <?=include_template('project.php', ['project' => $project]); ?>
                         <?php endforeach ?>
                     </ul>
                 </nav>

@@ -15,7 +15,7 @@ $show_complete_tasks = rand(0, 1);
 $user_id = 3;
 
 // Получаем массив проектов
-$projects = get_data($connect, make_projects_request(), $user_id, true);
+$initial_projects = get_data($connect, make_projects_request(), $user_id, true);
 
 // Получаем массив задач
 $tasks = get_data($connect, make_tasks_request(), $user_id, true);
@@ -25,6 +25,18 @@ $users = get_data($connect, make_users_request(), $user_id, false);
 
 // Получаем массив с количеством невыполненных заданий
 $tasks_quantity = get_data($connect, make_tasks_quantity_request(), $user_id, true);
+
+for ($i = 0; $i < count($initial_projects); $i++) {
+    $tasks_count = $tasks_quantity[$i];
+
+    $project = [
+        'id' => $initial_projects[$i]['id'],
+        'name' => $initial_projects[$i]['name'],
+        'tasks_count' => $tasks_count['COUNT(*)']
+    ];
+
+    $projects[] = $project;
+}
 
 // Передаём данные в шаблоны
 $page_content = include_template('index.php', ['show_complete_tasks' => $show_complete_tasks, 'tasks' => $tasks]);

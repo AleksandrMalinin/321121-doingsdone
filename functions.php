@@ -90,5 +90,5 @@ function make_users_request() {
 
 // делает запрос для количества невыполненных задач по каждому проекту
 function make_tasks_quantity_request() {
-    return $sql_tasks_quantity = 'SELECT COUNT(*) FROM tasks t JOIN projects p ON p.id = t.project_id WHERE t.status = 0 && t.user_id = ? GROUP BY project_id';
+    return $sql_tasks_quantity = 'SELECT COUNT(*) FROM tasks WHERE status = 0 && user_id = ? GROUP BY project_id';
 }
