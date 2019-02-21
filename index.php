@@ -15,16 +15,16 @@ $show_complete_tasks = rand(0, 1);
 $user_id = 3;
 
 // Получаем массив проектов
-$initial_projects = get_data($connect, make_projects_request(), $user_id, true);
+$initial_projects = get_projects_data($connect, $user_id);
 
 // Получаем массив задач
-$tasks = get_data($connect, make_tasks_request(), $user_id, true);
+$tasks = get_tasks_data($connect, $user_id);
 
 // Получаем имя текущего пользователя
-$users = get_data($connect, make_users_request(), $user_id, false);
+$users = get_users_data($connect, $user_id);
 
 // Получаем массив с количеством невыполненных заданий
-$tasks_quantity = get_data($connect, make_tasks_quantity_request(), $user_id, true);
+$tasks_quantity = get_tasks_quantity_data($connect, $user_id);
 
 for ($i = 0; $i < count($initial_projects); $i++) {
     $tasks_count = $tasks_quantity[$i];

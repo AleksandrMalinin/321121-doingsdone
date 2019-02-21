@@ -40,19 +40,19 @@ function check_urgency($task_deadline_str, $status) {
 }
 
 // получает массив данных
-function get_data($connect, $sql, $user = [], $bool) {
+function get_data($con, $sql, $user = [], $bool) {
     $data = null;
 
-    if (!$connect) {
+    if (!$con) {
         $error = mysqli_connect_error();
         print('Connection error: ' . $error);
     } else {
-        $stmt = db_get_prepare_stmt($connect, $sql, [$user]);
+        $stmt = db_get_prepare_stmt($con, $sql, [$user]);
         mysqli_stmt_execute($stmt);
         $result = mysqli_stmt_get_result($stmt);
 
         if (!$result) {
-            $error = mysqli_error($connect);
+            $error = mysqli_error($con);
             print('MYSQL error: ' . $error);
         } else {
             $data = check_multiline_data($bool, $data, $result);
@@ -74,21 +74,29 @@ function check_multiline_data($bool, $data, $result) {
 }
 
 // делает запрос для проектов
-function make_projects_request() {
-    return $sql_projects = 'SELECT * FROM projects WHERE user_id = ?';
+function get_projects_data($connect, $user) {
+    $sql_projects = 'SELECT * FROM projects WHERE user_id = ?';
+
+    return get_data($connect, $sql_projects, $user, true);
 }
 
 // делает запрос для задач
-function make_tasks_request() {
-    return $sql_tasks = 'SELECT * FROM tasks WHERE user_id = ?';
+function get_tasks_data($connect, $user) {
+    $sql_tasks = 'SELECT * FROM tasks WHERE user_id = ?';
+
+    return get_data($connect, $sql_tasks, $user, true);
 }
 
 // делает запрос для юзеров
-function make_users_request() {
-    return $sql_users = 'SELECT name FROM users WHERE id = ?';
+function get_users_data($connect, $user) {
+    $sql_users = 'SELECT name FROM users WHERE id = ?';
+
+    return get_data($connect, $sql_users, $user, false);
 }
 
 // делает запрос для количества невыполненных задач по каждому проекту
-function make_tasks_quantity_request() {
-    return $sql_tasks_quantity = 'SELECT COUNT(*) FROM tasks WHERE status = 0 && user_id = ? GROUP BY project_id';
+function get_tasks_quantity_data($connect, $user) {
+    $sql_tasks_quantity = 'SELECT COUNT(*) FROM tasks WHERE status = 0 && user_id = ? GROUP BY project_id';
+
+    return get_data($connect, $sql_tasks_quantity, $user, true);
 }
