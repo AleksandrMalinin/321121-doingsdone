@@ -45,7 +45,7 @@ $layout_content = include_template('layout.php', [
     'tasks' => $tasks,
     'tasks_quantity' => $tasks_quantity,
 	'content' => $page_content,
-	'user' => $users[0],
+	'user' => $users['name'],
 	'title' => 'Дела в порядке - Главная страница'
 ]);
 

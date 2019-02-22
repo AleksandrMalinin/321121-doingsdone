@@ -67,7 +67,7 @@ function check_multiline_data($bool, $data, $result) {
     if ($bool) {
         $data = mysqli_fetch_all($result, MYSQLI_ASSOC);
     } else {
-        $data = mysqli_fetch_row($result);
+        $data = mysqli_fetch_assoc($result);
     }
 
     return $data;
@@ -85,9 +85,7 @@ function get_tasks_data($connect, $user, $bool) {
     $sql_tasks = 'SELECT * FROM tasks WHERE user_id = ?';
     $additional_condition = ' AND status =' . $bool;
 
-    if ($bool) {
-        $sql_tasks;
-    } else {
+    if (!$bool) {
         $sql_tasks .= $additional_condition;
     }
 
