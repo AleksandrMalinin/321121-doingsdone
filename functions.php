@@ -40,7 +40,7 @@ function check_urgency($task_deadline_str, $status) {
 }
 
 // получает массив данных
-function get_data($con, $sql, $user = [], $bool) {
+function get_data($con, $sql, $user = [], $bool = true) {
     $data = null;
 
     if (!$con) {
@@ -77,18 +77,21 @@ function check_multiline_data($bool, $data, $result) {
 function get_projects_data($connect, $user) {
     $sql_projects = 'SELECT * FROM projects WHERE user_id = ?';
 
-    return get_data($connect, $sql_projects, $user, true);
+    return get_data($connect, $sql_projects, $user);
 }
 
 // делает запрос для задач, определяет тип для вывода (выполненная / невыполненная)
 function get_tasks_data($connect, $user, $bool) {
+    $sql_tasks = 'SELECT * FROM tasks WHERE user_id = ?';
+    $additional_condition = ' AND status =' . $bool;
+
     if ($bool) {
-        $sql_tasks = 'SELECT * FROM tasks WHERE user_id = ?';
+        $sql_tasks;
     } else {
-        $sql_tasks = 'SELECT * FROM tasks WHERE user_id = ? && status =' . $bool;
+        $sql_tasks .= $additional_condition;
     }
 
-    return get_data($connect, $sql_tasks, $user, true);
+    return get_data($connect, $sql_tasks, $user);
 }
 
 // делает запрос для юзеров
@@ -102,5 +105,5 @@ function get_users_data($connect, $user) {
 function get_tasks_quantity_data($connect, $user) {
     $sql_tasks_quantity = 'SELECT COUNT(*) FROM tasks WHERE status = 0 && user_id = ? GROUP BY project_id';
 
-    return get_data($connect, $sql_tasks_quantity, $user, true);
+    return get_data($connect, $sql_tasks_quantity, $user);
 }
