@@ -17,9 +17,6 @@ $user_id = 3;
 // Получаем массив проектов
 $initial_projects = get_projects_data($connect, $user_id);
 
-// Получаем массив задач
-$tasks = get_tasks_data($connect, $user_id, $show_complete_tasks);
-
 // Получаем имя текущего пользователя
 $users = get_users_data($connect, $user_id);
 
@@ -32,17 +29,35 @@ for ($i = 0; $i < count($initial_projects); $i++) {
     $project = [
         'id' => $initial_projects[$i]['id'],
         'name' => $initial_projects[$i]['name'],
-        'tasks_count' => $tasks_count['COUNT(*)']
+        'tasks_count' => $tasks_count['COUNT(*)'],
+        'link' => '/index.php?id=' . $initial_projects[$i]['id']
     ];
 
+    // массив с проектами
     $projects[] = $project;
+
+    // массив с id проектов
+    $projects_id[] = $initial_projects[$i]['id'];
 }
 
-// Передаём данные в шаблоны
-$page_content = include_template('index.php', ['show_complete_tasks' => $show_complete_tasks, 'tasks' => $tasks]);
+// Получаем массив задач
+$initial_tasks = get_tasks_data($connect, $user_id, $show_complete_tasks, $projects_id);
+
+// проверяем тип данных, которые вернула функция $initial_tasks, если это не массив значит это ошибка
+if (is_array($initial_tasks)) {
+    $tasks = $initial_tasks;
+
+    // Передаём массив с задачами в шаблон
+    $page_content = include_template('index.php', ['show_complete_tasks' => $show_complete_tasks, 'tasks' => $tasks]);
+} else {
+    $error = $initial_tasks;
+
+    // Передаём в шаблон код ошибки
+    $page_content = include_template('error.php', ['error' => $error]);
+}
+
 $layout_content = include_template('layout.php', [
     'projects' => $projects,
-    'tasks' => $tasks,
     'tasks_quantity' => $tasks_quantity,
 	'content' => $page_content,
 	'user' => $users['name'],
