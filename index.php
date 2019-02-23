@@ -14,35 +14,23 @@ $show_complete_tasks = rand(0, 1);
 // Текущий юзер
 $user_id = 3;
 
-// Получаем массив проектов
-$initial_projects = get_projects_data($connect, $user_id);
-
 // Получаем имя текущего пользователя
 $users = get_users_data($connect, $user_id);
 
 // Получаем массив с количеством невыполненных заданий
 $tasks_quantity = get_tasks_quantity_data($connect, $user_id);
 
-for ($i = 0; $i < count($initial_projects); $i++) {
-    $tasks_count = $tasks_quantity[$i];
+// Получаем массив проектов
+$projects = get_projects_data($connect, $user_id, $tasks_quantity);
 
-    $project = [
-        'id' => $initial_projects[$i]['id'],
-        'name' => $initial_projects[$i]['name'],
-        'tasks_count' => $tasks_count['COUNT(*)'],
-        'link' => '/index.php?id=' . $initial_projects[$i]['id']
-    ];
-
-    // массив с проектами
-    $projects[] = $project;
-
-    // массив с id проектов
-    $projects_id[] = $initial_projects[$i]['id'];
+// Собираем массив с id проектов
+for ($i = 0; $i < count($projects); $i++) {
+    $projects_id[] = $projects[$i]['id'];
 }
 
-// проверяем был ли передан параметр запроса
+// Проверяем был ли передан параметр запроса
 if (isset($_GET['id'])) {
-    // проверяем, что id существует
+    // Проверяем, что id существует
     if (in_array($_GET['id'], $projects_id)) {
         $id = intval($_GET['id']);
 

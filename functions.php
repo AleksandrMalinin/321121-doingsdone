@@ -74,10 +74,27 @@ function check_multiline_data($bool, $data, $result) {
 }
 
 // делает запрос для проектов
-function get_projects_data($connect, $user) {
+function get_projects_data($connect, $user, $quantity) {
     $sql_projects = 'SELECT * FROM projects WHERE user_id = ?';
 
-    return get_data($connect, $sql_projects, $user);
+    $initial_projects = get_data($connect, $sql_projects, $user);
+
+    // собираем ассоциативный массив каждого проекта
+    for ($i = 0; $i < count($initial_projects); $i++) {
+        $tasks_count = $quantity[$i];
+
+        $project = [
+            'id' => $initial_projects[$i]['id'],
+            'name' => $initial_projects[$i]['name'],
+            'tasks_count' => $tasks_count['COUNT(*)'],
+            'link' => '/index.php?id=' . $initial_projects[$i]['id']
+        ];
+
+        // собираем массив с проектами
+        $projects[] = $project;
+    }
+
+    return $projects;
 }
 
 // делает запрос для задач, определяет тип для вывода (выполненная / невыполненная)
