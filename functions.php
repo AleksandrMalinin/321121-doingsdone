@@ -81,20 +81,11 @@ function get_projects_data($connect, $user) {
 }
 
 // делает запрос для задач, определяет тип для вывода (выполненная / невыполненная)
-function get_tasks_data($connect, $user, $bool, $projects_id) {
-    $id = '';
+function get_tasks_data($connect, $user, $bool, $id = false) {
     $additional_condition = ' AND status = ' . $bool;
     $sql_tasks = 'SELECT * FROM tasks WHERE user_id = ?';
 
-    // проверяет был ли передан параметр запроса
-    if (isset($_GET['id'])) {
-        // проверяет, что id существует
-        if (in_array($_GET['id'], $projects_id)) {
-            $id = intval($_GET['id']);
-        } else {
-            return $error = '404';
-        }
-
+    if ($id) {
         $sql_project_id = ' AND project_id = ' . $id;
         $sql_tasks .= $sql_project_id;
     }

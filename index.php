@@ -40,21 +40,23 @@ for ($i = 0; $i < count($initial_projects); $i++) {
     $projects_id[] = $initial_projects[$i]['id'];
 }
 
-// Получаем массив задач
-$initial_tasks = get_tasks_data($connect, $user_id, $show_complete_tasks, $projects_id);
+// проверяем был ли передан параметр запроса
+if (isset($_GET['id'])) {
+    // проверяем, что id существует
+    if (in_array($_GET['id'], $projects_id)) {
+        $id = intval($_GET['id']);
 
-// проверяем тип данных, которые вернула функция $initial_tasks, если это не массив значит это ошибка
-if (is_array($initial_tasks)) {
-    $tasks = $initial_tasks;
-
-    // Передаём массив с задачами в шаблон
-    $page_content = include_template('index.php', ['show_complete_tasks' => $show_complete_tasks, 'tasks' => $tasks]);
+        $tasks = get_tasks_data($connect, $user_id, $show_complete_tasks, $id);
+    } else {
+        http_response_code(404);
+        die();
+    }
 } else {
-    $error = $initial_tasks;
-
-    // Передаём в шаблон код ошибки
-    $page_content = include_template('error.php', ['error' => $error]);
+    $tasks = get_tasks_data($connect, $user_id, $show_complete_tasks);
 }
+
+// Передаём массив с задачами в шаблон
+$page_content = include_template('index.php', ['show_complete_tasks' => $show_complete_tasks, 'tasks' => $tasks]);
 
 $layout_content = include_template('layout.php', [
     'projects' => $projects,
