@@ -129,11 +129,8 @@ function get_tasks_quantity_data($connect, $user) {
 }
 
 function add_task($connect, $deadline, $task, $user, $project) {
-    $sql = 'INSERT INTO tasks (name, date_deadline, status, user_id, project_id) VALUES (?, ' . $deadline . ', 0, ?, ?)';
+    $sql = 'INSERT INTO tasks (name, date_deadline, status, user_id, project_id) VALUES (?, ?, 0, ?, ?)';
 
-    var_dump($sql);
-
-    $stmt = db_get_prepare_stmt($connect, $sql, [$task, $user, $project]);
+    $stmt = db_get_prepare_stmt($connect, $sql, [$deadline, $task, $user, $project]);
     mysqli_stmt_execute($stmt);
-
 }
