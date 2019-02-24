@@ -23,24 +23,21 @@ $tasks_quantity = get_tasks_quantity_data($connect, $user_id);
 // Получаем массив проектов
 $projects = get_projects_data($connect, $user_id, $tasks_quantity);
 
-// Собираем массив с id проектов
-for ($i = 0; $i < count($projects); $i++) {
-    $projects_id[] = $projects[$i]['id'];
-}
+$tasks = get_tasks_data($connect, $user_id, $show_complete_tasks);
 
 // Проверяем был ли передан параметр запроса
 if (isset($_GET['id'])) {
-    // Проверяем, что id существует
-    if (in_array($_GET['id'], $projects_id)) {
-        $id = intval($_GET['id']);
+    $id = intval($_GET['id']);
+    $sql_project = 'SELECT * FROM projects WHERE user_id = ? AND id = ' . $id ;
+    $project = get_data($connect, $sql_project, $user_id);
 
+    // Проверяем, что проект с таким id существует
+    if ($project) {
         $tasks = get_tasks_data($connect, $user_id, $show_complete_tasks, $id);
     } else {
         http_response_code(404);
         die();
     }
-} else {
-    $tasks = get_tasks_data($connect, $user_id, $show_complete_tasks);
 }
 
 // Передаём массив с задачами в шаблон

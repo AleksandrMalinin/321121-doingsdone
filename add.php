@@ -36,17 +36,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $deadline = $task['date'];
     }
 
-
-
     $project_id = null;
-    // проверяет что id ссылается на существующий проект
-    foreach ($projects as $project) {
+    // проверяет что задача ссылается на существующий проект
+    $sql_project = 'SELECT * FROM projects WHERE user_id = ? AND id = ' . $task['project'];
+    $project = get_data($connect, $sql_project, $user_id);
 
-        if (intval($task['project']) === $project['id']) {
-            $project_id = intval($task['project']);
-        }
-
+    if ($project) {
+        $project_id = intval($task['project']);
     }
+
+    var_dump($project);
+    var_dump($project_id);
 
     if (count($errors)) {
     	$page_content = include_template('add.php', [
@@ -56,7 +56,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'title' => 'Дела в порядке - Добавление задачи'
         ]);
     } else {
-        var_dump($project_id);
         add_task($connect, $deadline, $task['name'], $user_id, $project_id);
         header("Location: /");
     }
