@@ -54,11 +54,17 @@
       <main class="content__main">
         <h2 class="content__main-heading">Добавление задачи</h2>
 
-        <form class="form"  action="index.html" method="post">
+        <form class="form"  action="" method="post" enctype="multipart/form-data">
           <div class="form__row">
+            <?php
+                $classname = isset($errors['name']) ? 'form__input--error' : '';
+                $value = isset($task['name']) ? $task['name'] : '';
+            ?>
+
             <label class="form__label" for="name">Название <sup>*</sup></label>
 
-            <input class="form__input" type="text" name="name" id="name" value="" placeholder="Введите название">
+            <input class="form__input <?=$classname; ?>" type="text" name="name" id="name" value="" placeholder="Введите название">
+            <p class="form__message"><?= $classname ? $errors['name'] : ''; ?></p>
           </div>
 
           <div class="form__row">
@@ -66,15 +72,21 @@
 
             <select class="form__input form__input--select" name="project" id="project">
                 <?php foreach ($projects as $project): ?>
-                    <option value=""><?= $project['name']; ?></option>
+                    <option value="<?= $project['id']; ?>"><?= $project['name']; ?></option>
                 <?php endforeach; ?>
             </select>
           </div>
 
           <div class="form__row">
+            <?php
+                $classname = isset($errors['date']) ? 'form__input--error' : '';
+                $value = isset($task['date']) ? $task['date'] : '';
+            ?>
+
             <label class="form__label" for="date">Дата выполнения</label>
 
             <input class="form__input form__input--date" type="date" name="date" id="date" value="" placeholder="Введите дату в формате ДД.ММ.ГГГГ">
+            <p class="form__message"><?= $classname ? $errors['date'] : ''; ?></p>
           </div>
 
           <div class="form__row">

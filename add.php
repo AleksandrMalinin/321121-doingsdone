@@ -14,11 +14,55 @@ $tasks_quantity = get_tasks_quantity_data($connect, $user_id);
 // Получаем массив проектов
 $projects = get_projects_data($connect, $user_id, $tasks_quantity);
 
-// Передаём массив с проектами в шаблон
-$page_content = include_template('add.php', [
-    'projects' => $projects,
-    'user' => $users['name'],
-    'title' => 'Дела в порядке - Добавление задачи'
-]);
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $task = $_POST;
+
+    $required = ['name'];
+    $errors = [];
+
+    foreach ($required as $key) {
+		if (empty($_POST[$key])) {
+            $errors[$key] = 'Заполните это поле';
+		}
+	}
+
+    // если дата не установлена
+    if (empty($task['date'])) {
+        $deadline = null;
+    // если дата установлена, но она меньше текущей
+    } else if (!empty($task['date']) && strtotime($task['date']) < time()) {
+        $errors['date'] = 'Дата должна быть больше текущей';
+    } else {
+        $deadline = $task['date'];
+    }
+
+    $project_id = null;
+    // проверяет что id ссылается на существующий проект
+    foreach ($projects as $project) {
+        if ($task['project'] === $project['id']) {
+            $project_id = intval($task['project']);
+        }
+    }
+
+    if (count($errors)) {
+    	$page_content = include_template('add.php', [
+            'errors' => $errors,
+            'projects' => $projects,
+            'user' => $users['name'],
+            'title' => 'Дела в порядке - Добавление задачи'
+        ]);
+    } else {
+        add_task($connect, $deadline, $task['name'], $user_id, $project_id);
+        header("Location: /");
+    }
+} else {
+    // Передаём массив с проектами в шаблон
+    $page_content = include_template('add.php', [
+        'projects' => $projects,
+        'user' => $users['name'],
+        'title' => 'Дела в порядке - Добавление задачи'
+    ]);
+}
+
 
 print($page_content);
