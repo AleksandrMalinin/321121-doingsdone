@@ -114,6 +114,27 @@ function get_tasks_data($connect, $user, $bool, $id = false) {
     return get_data($connect, $sql_tasks, $user);
 }
 
+// получает количество невыполненных задач по каждому проекту
+function get_tasks_quantity_data($connect, $user) {
+    $sql_tasks_quantity = 'SELECT COUNT(*) FROM tasks WHERE status = 0 && user_id = ? GROUP BY project_id';
+
+    return get_data($connect, $sql_tasks_quantity, $user);
+}
+
+// получает общее количество задач
+function get_all_tasks_quantity($connect, $user) {
+    $sql_tasks = 'SELECT COUNT(*) FROM tasks WHERE user_id = ?';
+
+    return get_data($connect, $sql_tasks, $user, false);
+}
+
+// получает количество задач без проекта
+function get_random_tasks_quantity($connect, $user) {
+    $sql_tasks_quantity = 'SELECT COUNT(*) FROM tasks WHERE user_id = ? && project_id IS NULL';
+
+    return get_data($connect, $sql_tasks_quantity, $user, false);
+}
+
 // делает запрос для юзеров
 function get_users_data($connect, $user) {
     $sql_users = 'SELECT name FROM users WHERE id = ?';
@@ -121,17 +142,19 @@ function get_users_data($connect, $user) {
     return get_data($connect, $sql_users, $user, false);
 }
 
-// делает запрос для количества невыполненных задач по каждому проекту
-function get_tasks_quantity_data($connect, $user) {
-    $sql_tasks_quantity = 'SELECT COUNT(*) FROM tasks WHERE status = 0 && user_id = ? GROUP BY project_id';
-
-    return get_data($connect, $sql_tasks_quantity, $user);
-}
-
 // добавляет новую задачу
-function add_task($connect, $deadline, $task, $user, $project) {
-    $sql = 'INSERT INTO tasks (name, date_deadline, status, user_id, project_id) VALUES (?, ?, 0, ?, ?)';
+// function add_task($connect, $task, $user, $deadline = NULL, $project = NULL) {
+function add_task($connect, $data) {
+    $string_questions = '';
 
-    $stmt = db_get_prepare_stmt($connect, $sql, [$task, $deadline, $user, $project]);
+    for ($i = 0; $i < count($data); $i++) {
+        $string .= ', ?';
+    }
+
+    // $sql = 'INSERT INTO tasks (name, status, user_id, date_deadline, project_id) VALUES (?, 0, ?, ?, ?)';
+    $sql = 'INSERT INTO tasks (status, name, user_id, date_deadline, project_id) VALUES (0' . $string . ')';
+
+    // $stmt = db_get_prepare_stmt($connect, $sql, [$task, $user, $deadline, $project]);
+    $stmt = db_get_prepare_stmt($connect, $sql, $data);
     mysqli_stmt_execute($stmt);
 }

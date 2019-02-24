@@ -42,6 +42,15 @@
 
                 <nav class="main-navigation">
                     <ul class="main-navigation__list">
+                        <li class="main-navigation__list-item">
+                            <a class="main-navigation__list-item-link" href="/index.php?all">Все</a>
+                            <span class="main-navigation__list-item-count"><?=$tasks_all; ?></span>
+                        </li>
+                        <li class="main-navigation__list-item">
+                            <a class="main-navigation__list-item-link" href="/index.php?incoming">Входящие</a>
+                            <span class="main-navigation__list-item-count"><?=$incoming; ?></span>
+                        </li>
+
                         <?php foreach ($projects as $project): ?>
                             <?=include_template('project.php', ['project' => $project]); ?>
                         <?php endforeach ?>

@@ -23,7 +23,14 @@ $tasks_quantity = get_tasks_quantity_data($connect, $user_id);
 // Получаем массив проектов
 $projects = get_projects_data($connect, $user_id, $tasks_quantity);
 
+// Получаем массив задач
 $tasks = get_tasks_data($connect, $user_id, $show_complete_tasks);
+
+// Получаем общее количество задач (Все)
+$all_tasks = get_all_tasks_quantity($connect, $user_id);
+
+// Получаем количество задач без проектов (Входящие)
+$random_tasks = get_random_tasks_quantity($connect, $user_id);
 
 // Проверяем был ли передан параметр запроса
 if (isset($_GET['id'])) {
@@ -45,6 +52,8 @@ $page_content = include_template('index.php', ['show_complete_tasks' => $show_co
 
 $layout_content = include_template('layout.php', [
     'projects' => $projects,
+    'incoming' => $random_tasks['COUNT(*)'],
+    'tasks_all' => $all_tasks['COUNT(*)'],
     'tasks_quantity' => $tasks_quantity,
 	'content' => $page_content,
 	'user' => $users['name'],

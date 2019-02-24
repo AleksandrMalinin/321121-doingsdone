@@ -42,6 +42,14 @@
 
         <nav class="main-navigation">
             <ul class="main-navigation__list">
+                <li class="main-navigation__list-item">
+                    <a class="main-navigation__list-item-link" href="/index.php?all">Все</a>
+                    <span class="main-navigation__list-item-count"><?=$tasks_all; ?></span>
+                </li>
+                <li class="main-navigation__list-item">
+                    <a class="main-navigation__list-item-link" href="/index.php?incoming">Входящие</a>
+                    <span class="main-navigation__list-item-count"><?=$incoming; ?></span>
+                </li>
                 <?php foreach ($projects as $project): ?>
                     <?=include_template('project.php', ['project' => $project]); ?>
                 <?php endforeach ?>
@@ -71,6 +79,7 @@
             <label class="form__label" for="project">Проект</label>
 
             <select class="form__input form__input--select" name="project" id="project">
+                <option value="incoming">Входящие</option>
                 <?php foreach ($projects as $project): ?>
                     <option value="<?= $project['id']; ?>"><?= $project['name']; ?></option>
                 <?php endforeach; ?>
