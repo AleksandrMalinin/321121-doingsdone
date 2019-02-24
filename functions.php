@@ -128,10 +128,10 @@ function get_tasks_quantity_data($connect, $user) {
     return get_data($connect, $sql_tasks_quantity, $user);
 }
 
+// добавляет новую задачу
 function add_task($connect, $deadline, $task, $user, $project) {
     $sql = 'INSERT INTO tasks (name, date_deadline, status, user_id, project_id) VALUES (?, ?, 0, ?, ?)';
 
-
-    $stmt = db_get_prepare_stmt($connect, $sql, [$deadline, $task, $user, $project]);
+    $stmt = db_get_prepare_stmt($connect, $sql, [$task, $deadline, $user, $project]);
     mysqli_stmt_execute($stmt);
 }
