@@ -22,7 +22,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
+    // проверяет валидность адреса почты
+    $email = filter_var($form['email'], FILTER_VALIDATE_EMAIL);
+
+    if (!$email) {
+        $errors['email'] = 'E-mail указан некорректно';
+    }
+
     if (empty($errors)) {
+        $meow = filter_var($form['email'], FILTER_VALIDATE_EMAIL);
+
         $email = mysqli_real_escape_string($connect, $form['email']);
         $sql = "SELECT id FROM users WHERE email = '$email'";
         $result = mysqli_query($connect, $sql);
