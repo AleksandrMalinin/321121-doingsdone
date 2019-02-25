@@ -10,7 +10,7 @@
     </td>
 
     <td class="task__file">
-        <a class="download-link" href="#">Home.psd</a>
+        <a class="download-link" href="<?= $task['file']; ?>">Home.psd</a>
     </td>
 
     <td class="task__date"><?= strip_tags($task['date_deadline']); ?></td>

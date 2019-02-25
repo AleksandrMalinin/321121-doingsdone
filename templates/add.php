@@ -43,11 +43,11 @@
         <nav class="main-navigation">
             <ul class="main-navigation__list">
                 <li class="main-navigation__list-item">
-                    <a class="main-navigation__list-item-link" href="/index.php?all">Все</a>
+                    <a class="main-navigation__list-item-link" href="/index.php?id=all">Все</a>
                     <span class="main-navigation__list-item-count"><?=$tasks_all; ?></span>
                 </li>
                 <li class="main-navigation__list-item">
-                    <a class="main-navigation__list-item-link" href="/index.php?incoming">Входящие</a>
+                    <a class="main-navigation__list-item-link" href="/index.php?id=incoming">Входящие</a>
                     <span class="main-navigation__list-item-count"><?=$incoming; ?></span>
                 </li>
                 <?php foreach ($projects as $project): ?>
@@ -66,7 +66,6 @@
           <div class="form__row">
             <?php
                 $classname = isset($errors['name']) ? 'form__input--error' : '';
-                $value = isset($task['name']) ? $task['name'] : '';
             ?>
 
             <label class="form__label" for="name">Название <sup>*</sup></label>
@@ -76,6 +75,9 @@
           </div>
 
           <div class="form__row">
+            <?php
+                $classname = isset($errors['project']) ? 'form__input--error' : '';
+            ?>
             <label class="form__label" for="project">Проект</label>
 
             <select class="form__input form__input--select" name="project" id="project">
@@ -84,6 +86,7 @@
                     <option value="<?= $project['id']; ?>"><?= $project['name']; ?></option>
                 <?php endforeach; ?>
             </select>
+            <p class="form__message"><?= $classname ? $errors['project'] : ''; ?></p>
           </div>
 
           <div class="form__row">

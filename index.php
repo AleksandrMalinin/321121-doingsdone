@@ -33,13 +33,15 @@ $all_tasks = get_all_tasks_quantity($connect, $user_id);
 $random_tasks = get_random_tasks_quantity($connect, $user_id);
 
 // Проверяем был ли передан параметр запроса
-if (isset($_GET['id'])) {
-    $id = intval($_GET['id']);
-    $sql_project = 'SELECT * FROM projects WHERE user_id = ? AND id = ' . $id ;
-    $project = get_data($connect, $sql_project, $user_id);
+if (isset($_GET['id']) && $_GET['id'] !== 'all') {
+    if ($_GET['id'] === 'incoming') {
+        $id = NULL;
+    } else {
+        $id = intval($_GET['id']);
+        $project = is_project($connect, $user_id, $id);
+    }
 
-    // Проверяем, что проект с таким id существует
-    if ($project) {
+    if ($_GET['id'] === 'incoming' || $project) {
         $tasks = get_tasks_data($connect, $user_id, $show_complete_tasks, $id);
     } else {
         http_response_code(404);

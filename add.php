@@ -12,7 +12,6 @@ require_once('./init.php');
 $user_id = 3;
 $tasks_incoming = 0;
 
-
 // Получаем имя текущего пользователя
 $users = get_users_data($connect, $user_id);
 
@@ -41,35 +40,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 	}
 
     $deadline = NULL;
-
-    // если дата установлена, но она меньше текущей
-    if (!empty($task['date']) && strtotime($task['date']) < time()) {
-        $errors['date'] = 'Дата должна быть больше текущей';
+    // если дата установлена
+    if (!empty($task['date'])) {
+        // и она меньше текущей
+        if (strtotime($task['date']) < time()) {
+            $errors['date'] = 'Дата должна быть больше текущей';
+        } else {
+            $deadline = date('Y.m.d 23:59:59', strtotime($task['date']));
+        }
     }
 
     $project_id = NULL;
-
     if ($task['project'] !== 'incoming') {
         // проверяет что задача ссылается на существующий проект
-        $sql_project = 'SELECT * FROM projects WHERE user_id = ? AND id = ' . $task['project'];
-        $project = get_data($connect, $sql_project, $user_id);
+        $project = is_project($connect, $user_id, intval($task['project']));
 
         if ($project) {
             $project_id = intval($task['project']);
+        } else {
+            $errors['project'] = 'Такого проекта не существует';
         }
     } else {
         $task['project'] = 'incoming';
     }
 
-    // складывает значения в массив
-    $data = array($deadline, $task['name'], $user_id, $project_id);
-
-    // получает все значения не равные NULL
-    function get_not_null($var) {
-        return $var !== NULL;
+    $file = NULL;
+    // проверяет загружен ли файл, даёт ему новое имя, помещает в корень
+    if (is_uploaded_file($_FILES['preview']['tmp_name'])) {
+        $tmp_name = $_FILES['preview']['tmp_name'];
+        $file = $_FILES['preview']['name'];
+        $extension = pathinfo($file, PATHINFO_EXTENSION);
+        $file = uniqid() . "." . $extension;
+        move_uploaded_file($tmp_name, '' . $file);
     }
-
-    $filtered_data = array_filter($data, 'get_not_null');
 
     if (count($errors)) {
     	$page_content = include_template('add.php', [
@@ -81,9 +84,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'title' => 'Дела в порядке - Добавление задачи'
         ]);
     } else {
-        // add_task($connect, $deadline, $task['name'], $user_id, $project_id);
-        add_task($connect, $filtered_data);
-        // header("Location: /");
+        add_task($connect, $task['name'], $user_id, $deadline, $project_id, $file);
+        header("Location: /");
     }
 } else {
     // Передаём массив с проектами в шаблон
@@ -95,6 +97,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'title' => 'Дела в порядке - Добавление задачи'
     ]);
 }
-
 
 print($page_content);

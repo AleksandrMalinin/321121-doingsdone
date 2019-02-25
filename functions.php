@@ -100,11 +100,16 @@ function get_projects_data($connect, $user, $quantity) {
 // делает запрос для задач, определяет тип для вывода (выполненная / невыполненная)
 function get_tasks_data($connect, $user, $bool, $id = false) {
     $additional_condition = ' AND status = ' . $bool;
+    $null_condition = ' AND project_id IS NULL';
     $sql_tasks = 'SELECT * FROM tasks WHERE user_id = ?';
 
-    if ($id) {
+    if ($id && !is_null($id)) {
         $sql_project_id = ' AND project_id = ' . $id;
         $sql_tasks .= $sql_project_id;
+    }
+
+    if (is_null($id)) {
+        $sql_tasks .= $null_condition;
     }
 
     if (!$bool) {
@@ -142,19 +147,19 @@ function get_users_data($connect, $user) {
     return get_data($connect, $sql_users, $user, false);
 }
 
+// проверка на существование проекта
+function is_project($connect, $user_id, $project_id) {
+    // проверяет что задача ссылается на существующий проект
+    $sql_project = 'SELECT * FROM projects WHERE user_id = ? AND id = ' . $project_id;
+    $project = get_data($connect, $sql_project, $user_id);
+
+    return $project;
+}
+
 // добавляет новую задачу
-// function add_task($connect, $task, $user, $deadline = NULL, $project = NULL) {
-function add_task($connect, $data) {
-    $string_questions = '';
+function add_task($connect, $task, $user, $deadline = NULL, $project = NULL, $file = NULL) {
+    $sql = 'INSERT INTO tasks (name, status, user_id, date_deadline, project_id, file) VALUES (?, 0, ?, ?, ?, ?)';
 
-    for ($i = 0; $i < count($data); $i++) {
-        $string .= ', ?';
-    }
-
-    // $sql = 'INSERT INTO tasks (name, status, user_id, date_deadline, project_id) VALUES (?, 0, ?, ?, ?)';
-    $sql = 'INSERT INTO tasks (status, name, user_id, date_deadline, project_id) VALUES (0' . $string . ')';
-
-    // $stmt = db_get_prepare_stmt($connect, $sql, [$task, $user, $deadline, $project]);
-    $stmt = db_get_prepare_stmt($connect, $sql, $data);
+    $stmt = db_get_prepare_stmt($connect, $sql, [$task, $user, $deadline, $project, $file]);
     mysqli_stmt_execute($stmt);
 }
