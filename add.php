@@ -60,8 +60,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } else {
             $errors['project'] = 'Такого проекта не существует';
         }
-    } else {
-        $task['project'] = 'incoming';
     }
 
     $file = NULL;
