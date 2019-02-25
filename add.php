@@ -42,8 +42,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $deadline = NULL;
     // если дата установлена
     if (!empty($task['date'])) {
-        // и она меньше текущей
-        if (strtotime($task['date']) < time()) {
+        $date = check_date_format($task['date']);
+
+        if (!$date) {
+            $errors['date'] = 'Заполните поле в указанном формате';
+        } else if (strtotime($task['date']) < time()) {
             $errors['date'] = 'Дата должна быть больше текущей';
         } else {
             $deadline = date('Y.m.d 23:59:59', strtotime($task['date']));
@@ -83,7 +86,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         ]);
     } else {
         add_task($connect, $task['name'], $user_id, $deadline, $project_id, $file);
-        header("Location: /");
+        // header("Location: /");
     }
 } else {
     // Передаём массив с проектами в шаблон
