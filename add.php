@@ -86,7 +86,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         ]);
     } else {
         add_task($connect, $task['name'], $user_id, $deadline, $project_id, $file);
-        // header("Location: /");
+        header("Location: /");
     }
 } else {
     // Передаём массив с проектами в шаблон
