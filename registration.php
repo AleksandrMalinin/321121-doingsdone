@@ -30,8 +30,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if (empty($errors)) {
-        $meow = filter_var($form['email'], FILTER_VALIDATE_EMAIL);
-
         $email = mysqli_real_escape_string($connect, $form['email']);
         $sql = "SELECT id FROM users WHERE email = '$email'";
         $result = mysqli_query($connect, $sql);
