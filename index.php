@@ -17,9 +17,6 @@ $user_id = 3;
 // Получаем массив проектов
 $initial_projects = get_projects_data($connect, $user_id);
 
-// Получаем массив задач
-$tasks = get_tasks_data($connect, $user_id, $show_complete_tasks);
-
 // Получаем имя текущего пользователя
 $users = get_users_data($connect, $user_id);
 
@@ -32,17 +29,37 @@ for ($i = 0; $i < count($initial_projects); $i++) {
     $project = [
         'id' => $initial_projects[$i]['id'],
         'name' => $initial_projects[$i]['name'],
-        'tasks_count' => $tasks_count['COUNT(*)']
+        'tasks_count' => $tasks_count['COUNT(*)'],
+        'link' => '/index.php?id=' . $initial_projects[$i]['id']
     ];
 
+    // массив с проектами
     $projects[] = $project;
+
+    // массив с id проектов
+    $projects_id[] = $initial_projects[$i]['id'];
 }
 
-// Передаём данные в шаблоны
+// проверяем был ли передан параметр запроса
+if (isset($_GET['id'])) {
+    // проверяем, что id существует
+    if (in_array($_GET['id'], $projects_id)) {
+        $id = intval($_GET['id']);
+
+        $tasks = get_tasks_data($connect, $user_id, $show_complete_tasks, $id);
+    } else {
+        http_response_code(404);
+        die();
+    }
+} else {
+    $tasks = get_tasks_data($connect, $user_id, $show_complete_tasks);
+}
+
+// Передаём массив с задачами в шаблон
 $page_content = include_template('index.php', ['show_complete_tasks' => $show_complete_tasks, 'tasks' => $tasks]);
+
 $layout_content = include_template('layout.php', [
     'projects' => $projects,
-    'tasks' => $tasks,
     'tasks_quantity' => $tasks_quantity,
 	'content' => $page_content,
 	'user' => $users['name'],

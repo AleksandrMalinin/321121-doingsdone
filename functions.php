@@ -81,9 +81,14 @@ function get_projects_data($connect, $user) {
 }
 
 // делает запрос для задач, определяет тип для вывода (выполненная / невыполненная)
-function get_tasks_data($connect, $user, $bool) {
+function get_tasks_data($connect, $user, $bool, $id = false) {
+    $additional_condition = ' AND status = ' . $bool;
     $sql_tasks = 'SELECT * FROM tasks WHERE user_id = ?';
-    $additional_condition = ' AND status =' . $bool;
+
+    if ($id) {
+        $sql_project_id = ' AND project_id = ' . $id;
+        $sql_tasks .= $sql_project_id;
+    }
 
     if (!$bool) {
         $sql_tasks .= $additional_condition;
