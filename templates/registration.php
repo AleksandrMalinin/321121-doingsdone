@@ -36,34 +36,34 @@
           <form class="form" action="" method="post">
             <div class="form__row">
               <?php
-                  $classname = isset($data['email']) ? 'form__input--error' : '';
+                  $classname = isset($errors['email']) ? 'form__input--error' : '';
               ?>
 
               <label class="form__label" for="email">E-mail <sup>*</sup></label>
 
-              <input class="form__input <?=$classname; ?>" type="text" name="email" id="email" value="" placeholder="Введите e-mail">
+              <input class="form__input <?=$classname; ?>" type="text" name="email" id="email" value="<?=$form['email'] ?? ''; ?>" placeholder="Введите e-mail">
 
-              <p class="form__message"><?= $classname ? $data['email'] : ''; ?></p>
+              <p class="form__message"><?= $classname ? $errors['email'] : ''; ?></p>
             </div>
 
             <div class="form__row">
               <?php
-                  $classname = isset($data['password']) ? 'form__input--error' : '';
+                  $classname = isset($errors['password']) ? 'form__input--error' : '';
               ?>
               <label class="form__label" for="password">Пароль <sup>*</sup></label>
 
               <input class="form__input <?=$classname; ?>" type="password" name="password" id="password" value="" placeholder="Введите пароль">
-              <p class="form__message"><?= $classname ? $data['password'] : ''; ?></p>
+              <p class="form__message"><?= $classname ? $errors['password'] : ''; ?></p>
             </div>
 
             <div class="form__row">
               <?php
-                  $classname = isset($data['name']) ? 'form__input--error' : '';
+                  $classname = isset($errors['name']) ? 'form__input--error' : '';
               ?>
               <label class="form__label" for="name">Имя <sup>*</sup></label>
 
-              <input class="form__input <?=$classname; ?>" type="text" name="name" id="name" value="" placeholder="Введите имя">
-              <p class="form__message"><?= $classname ? $data['name'] : ''; ?></p>
+              <input class="form__input <?=$classname; ?>" type="text" name="name" id="name" value="<?=$form['name'] ?? ''; ?>" placeholder="Введите имя">
+              <p class="form__message"><?= $classname ? $errors['name'] : ''; ?></p>
             </div>
 
             <div class="form__row form__row--controls">

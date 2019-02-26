@@ -9,12 +9,12 @@ require_once('./functions.php');
 require_once('./init.php');
 
 $data = [];
+$errors = [];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $form = $_POST;
 
     $required = ['email', 'password', 'name'];
-    $errors = [];
 
     foreach ($required as $key) {
         if (empty($form[$key])) {
@@ -47,11 +47,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
-    $data = $errors;
+    $errors = $errors;
+    $data = $form;
 }
 
 $page_content = include_template('registration.php', [
-    'data' => $data,
+    'errors' => $errors,
+    'form' => $data,
     'title' => 'Дела в порядке - Регистрация'
 ]);
 
