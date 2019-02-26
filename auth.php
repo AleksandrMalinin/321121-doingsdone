@@ -8,8 +8,6 @@ setlocale(LC_ALL, 'ru_RU');
 require_once('./functions.php');
 require_once('./init.php');
 
-session_start();
-
 $data = [];
 $errors = [];
 
@@ -49,6 +47,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     	}
 
         if ($result && empty($errors)) {
+            var_dump($_SESSION['user']);
+            var_dump($user);
             header("Location: /");
             exit();
         }

@@ -120,20 +120,24 @@ function get_projects_data($connect, $user, $quantity) {
     $sql_projects = 'SELECT * FROM projects WHERE user_id = ?';
 
     $initial_projects = get_data($connect, $sql_projects, $user);
+    $projects = [];
 
-    // собираем ассоциативный массив каждого проекта
-    for ($i = 0; $i < count($initial_projects); $i++) {
-        $tasks_count = $quantity[$i];
+    // если у юзера есть проекты
+    if (!empty($initial_projects)) {
+        // собираем ассоциативный массив каждого проекта
+        for ($i = 0; $i < count($initial_projects); $i++) {
+            $tasks_count = $quantity[$i];
 
-        $project = [
-            'id' => $initial_projects[$i]['id'],
-            'name' => $initial_projects[$i]['name'],
-            'tasks_count' => $tasks_count['COUNT(*)'],
-            'link' => '/index.php?id=' . $initial_projects[$i]['id']
-        ];
+            $project = [
+                'id' => $initial_projects[$i]['id'],
+                'name' => $initial_projects[$i]['name'],
+                'tasks_count' => $tasks_count['COUNT(*)'],
+                'link' => '/index.php?id=' . $initial_projects[$i]['id']
+            ];
 
-        // собираем массив с проектами
-        $projects[] = $project;
+            // собираем массив с проектами
+            $projects[] = $project;
+        }
     }
 
     return $projects;

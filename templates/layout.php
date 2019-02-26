@@ -9,11 +9,11 @@
     <link rel="stylesheet" href="css/flatpickr.min.css">
 </head>
 
-<body>
+<body <?php if (empty($user)): ?>class="body-background"<?php endif ?>>
 <h1 class="visually-hidden">Дела в порядке</h1>
 
 <div class="page-wrapper">
-    <div class="container container--with-sidebar">
+    <div class="container <?php if (!empty($user)): ?>container--with-sidebar<?php endif ?>">
         <header class="main-header">
             <a href="/">
                 <img src="img/logo.png" width="153" height="42" alt="Логотип Дела в порядке">
@@ -32,16 +32,17 @@
 
                         <div class="user-menu__data">
                             <p><?=$user; ?></p>
-                            <a href="#">Выйти</a>
+                            <a href="/logout.php">Выйти</a>
                         </div>
                     <?php else: ?>
-                        <a class="main-header__side-item button button--transparent" href="form-authorization.html">Войти</a>
+                        <a class="main-header__side-item button button--transparent" href="/auth.php">Войти</a>
                     <?php endif ?>
                     </div>
             </div>
         </header>
 
         <div class="content">
+            <?php if (!empty($user)): ?>
             <section class="content__side">
                 <h2 class="content__side-heading">Проекты</h2>
 
@@ -69,6 +70,19 @@
             <main class="content__main">
                 <?=$content; ?>
             </main>
+            <?php else: ?>
+            <section class="welcome">
+              <h2 class="welcome__heading">«Дела в порядке»</h2>
+
+              <div class="welcome__text">
+                <p>«Дела в порядке» — это веб приложение для удобного ведения списка дел. Сервис помогает пользователям не забывать о предстоящих важных событиях и задачах.</p>
+
+                <p>После создания аккаунта, пользователь может начать вносить свои дела, деля их по проектам и указывая сроки.</p>
+              </div>
+
+              <a class="welcome__button button" href="/registration.php">Зарегистрироваться</a>
+            </section>
+            <?php endif ?>
         </div>
     </div>
 </div>
@@ -81,7 +95,9 @@
             <p>Веб-приложение для удобного ведения списка дел.</p>
         </div>
 
-        <a class="main-footer__button button button--plus" href="pages/form-task.html">Добавить задачу</a>
+        <?php if (!empty($user)): ?>
+            <a class="main-footer__button button button--plus" href="pages/form-task.html">Добавить задачу</a>
+        <?php endif ?>
 
         <div class="main-footer__social social">
             <span class="visually-hidden">Мы в соцсетях:</span>

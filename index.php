@@ -12,7 +12,7 @@ require_once('./init.php');
 $show_complete_tasks = rand(0, 1);
 
 // Текущий юзер
-$user_id = 3;
+// $user_id = 3;
 
 // Получаем имя текущего пользователя
 $users = get_users_data($connect, $user_id);

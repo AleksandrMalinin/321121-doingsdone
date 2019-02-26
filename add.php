@@ -9,23 +9,23 @@ require_once('./functions.php');
 require_once('./init.php');
 
 // Текущий юзер
-$user_id = 3;
+// $user_id = 3;
 $tasks_incoming = 0;
 
 // Получаем имя текущего пользователя
 $users = get_users_data($connect, $user_id);
 
 // Получаем массив с количеством невыполненных заданий
-$tasks_quantity = get_tasks_quantity_data($connect, $user_id);
+$tasks_quantity = get_tasks_quantity($connect, $user_id);
 
 // Получаем массив проектов
 $projects = get_projects_data($connect, $user_id, $tasks_quantity);
 
 // Получаем общее количество задач (Все)
-$all_tasks = get_all_tasks_quantity($connect, $user_id);
+$all_tasks = get_tasks_quantity($connect, $user_id, 'all');
 
 // Получаем количество задач без проектов (Входящие)
-$random_tasks = get_random_tasks_quantity($connect, $user_id);
+$random_tasks = get_tasks_quantity($connect, $user_id, 'incoming');
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $task = $_POST;
