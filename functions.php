@@ -152,25 +152,29 @@ function get_tasks_data($connect, $user, $bool, $id = false) {
     return get_data($connect, $sql_tasks, $user);
 }
 
-// получает количество невыполненных задач по каждому проекту
-function get_tasks_quantity_data($connect, $user) {
-    $sql_tasks_quantity = 'SELECT COUNT(*) FROM tasks WHERE status = 0 && user_id = ? GROUP BY project_id';
+// получает количество задач
+function get_tasks_quantity($connect, $user, $project = null) {
+    $sql_tasks = 'SELECT COUNT(*) FROM tasks WHERE user_id = ?';
+    $sql_null = ' && project_id IS NULL';
+    $sql_undone = '&& status = 0';
+    $sql_group_by = ' GROUP BY project_id';
 
-    return get_data($connect, $sql_tasks_quantity, $user);
-}
+    // общее количество невыполненных
+    if ($project === 'all') {
+        $sql_tasks .= $sql_undone;
 
-// получает общее количество невыполненных задач
-function get_all_tasks_quantity($connect, $user) {
-    $sql_tasks = 'SELECT COUNT(*) FROM tasks WHERE status = 0 && user_id = ?';
+    // без проекта
+    } elseif ($project === 'incoming') {
+        $sql_tasks .= $sql_undone . $sql_null;
+
+    // невыполненных по каждому проекту
+    } else {
+        $sql_tasks .= $sql_undone . $sql_group_by;
+
+        return get_data($connect, $sql_tasks, $user);
+    }
 
     return get_data($connect, $sql_tasks, $user, false);
-}
-
-// получает количество задач без проекта
-function get_random_tasks_quantity($connect, $user) {
-    $sql_tasks_quantity = 'SELECT COUNT(*) FROM tasks WHERE user_id = ? && project_id IS NULL';
-
-    return get_data($connect, $sql_tasks_quantity, $user, false);
 }
 
 // делает запрос для юзеров
@@ -179,7 +183,6 @@ function get_users_data($connect, $user) {
 
     return get_data($connect, $sql_users, $user, false);
 }
-
 
 // добавляет новую задачу
 function add_task($connect, $task, $user, $deadline = NULL, $project = NULL, $file = NULL) {
