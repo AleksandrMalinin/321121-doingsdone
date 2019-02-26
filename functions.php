@@ -63,10 +63,19 @@ function is_project($connect, $user_id, $project_id) {
     return $project;
 }
 
-// проверяет на существование email
+// проверяет на существование email // TODO: Объединить в одну функцию
 function is_email($connect, $email) {
     $email_escaped = mysqli_real_escape_string($connect, $email);
     $sql = "SELECT id FROM users WHERE email = '$email_escaped'";
+    $result = mysqli_query($connect, $sql);
+
+    return $result;
+}
+
+// проверяет на существование юзера // TODO: Объединить в одну функцию
+function is_user($connect, $email) {
+    $email_escaped = mysqli_real_escape_string($connect, $email);
+    $sql = "SELECT * FROM users WHERE email = '$email_escaped'";
     $result = mysqli_query($connect, $sql);
 
     return $result;

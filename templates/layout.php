@@ -20,19 +20,24 @@
             </a>
 
             <div class="main-header__side">
-                <a class="main-header__side-item button button--plus open-modal" href="/add.php">Добавить задачу</a>
+                <?php if (!empty($user)): ?>
+                    <a class="main-header__side-item button button--plus open-modal" href="/add.php">Добавить задачу</a>
+                <?php endif ?>
 
-                <div class="main-header__side-item user-menu">
-                    <div class="user-menu__image">
-                        <img src="img/user.png" width="40" height="40" alt="Пользователь">
+                    <div class="main-header__side-item user-menu">
+                    <?php if (!empty($user)): ?>
+                        <div class="user-menu__image">
+                            <img src="img/user.png" width="40" height="40" alt="Пользователь">
+                        </div>
+
+                        <div class="user-menu__data">
+                            <p><?=$user; ?></p>
+                            <a href="#">Выйти</a>
+                        </div>
+                    <?php else: ?>
+                        <a class="main-header__side-item button button--transparent" href="form-authorization.html">Войти</a>
+                    <?php endif ?>
                     </div>
-
-                    <div class="user-menu__data">
-                        <p><?=$user; ?></p>
-
-                        <a href="#">Выйти</a>
-                    </div>
-                </div>
             </div>
         </header>
 
