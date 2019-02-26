@@ -17,8 +17,7 @@ $user_id = 3;
 // Получаем имя текущего пользователя
 $users = get_users_data($connect, $user_id);
 
-// // Получаем массив с количеством невыполненных заданий
-// $tasks_quantity = get_tasks_quantity_data($connect, $user_id);
+// Получаем массив с количеством невыполненных заданий
 $tasks_quantity = get_tasks_quantity($connect, $user_id);
 
 // Получаем массив проектов
@@ -27,12 +26,10 @@ $projects = get_projects_data($connect, $user_id, $tasks_quantity);
 // Получаем массив задач
 $tasks = get_tasks_data($connect, $user_id, $show_complete_tasks);
 
-// // Получаем общее количество задач (Все)
-// $all_tasks = get_all_tasks_quantity($connect, $user_id);
+// Получаем общее количество задач (Все)
 $all_tasks = get_tasks_quantity($connect, $user_id, 'all');
 
-// // Получаем количество задач без проектов (Входящие)
-// $random_tasks = get_random_tasks_quantity($connect, $user_id);
+// Получаем количество задач без проектов (Входящие)
 $random_tasks = get_tasks_quantity($connect, $user_id, 'incoming');
 
 // Проверяем был ли передан параметр запроса
