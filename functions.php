@@ -32,6 +32,7 @@ function include_template($name, $data) {
     return $result;
 }
 
+// проверяет задачу на срочность
 function check_urgency($task_deadline_str, $status) {
     $urgency = false;
 
@@ -51,6 +52,24 @@ function check_urgency($task_deadline_str, $status) {
     }
 
     return $urgency;
+}
+
+// проверяет на существование проекта
+function is_project($connect, $user_id, $project_id) {
+    // проверяет что задача ссылается на существующий проект
+    $sql_project = 'SELECT * FROM projects WHERE user_id = ? AND id = ' . $project_id;
+    $project = get_data($connect, $sql_project, $user_id);
+
+    return $project;
+}
+
+// проверяет на существование email
+function is_email($connect, $email) {
+    $email_escaped = mysqli_real_escape_string($connect, $email);
+    $sql = "SELECT id FROM users WHERE email = '$email_escaped'";
+    $result = mysqli_query($connect, $sql);
+
+    return $result;
 }
 
 // получает массив данных
@@ -140,7 +159,7 @@ function get_tasks_quantity_data($connect, $user) {
     return get_data($connect, $sql_tasks_quantity, $user);
 }
 
-// получает общее количество задач
+// получает общее количество невыполненных задач
 function get_all_tasks_quantity($connect, $user) {
     $sql_tasks = 'SELECT COUNT(*) FROM tasks WHERE status = 0 && user_id = ?';
 
@@ -161,14 +180,6 @@ function get_users_data($connect, $user) {
     return get_data($connect, $sql_users, $user, false);
 }
 
-// проверка на существование проекта
-function is_project($connect, $user_id, $project_id) {
-    // проверяет что задача ссылается на существующий проект
-    $sql_project = 'SELECT * FROM projects WHERE user_id = ? AND id = ' . $project_id;
-    $project = get_data($connect, $sql_project, $user_id);
-
-    return $project;
-}
 
 // добавляет новую задачу
 function add_task($connect, $task, $user, $deadline = NULL, $project = NULL, $file = NULL) {
@@ -176,4 +187,12 @@ function add_task($connect, $task, $user, $deadline = NULL, $project = NULL, $fi
 
     $stmt = db_get_prepare_stmt($connect, $sql, [$task, $user, $deadline, $project, $file]);
     mysqli_stmt_execute($stmt);
+}
+
+function add_user($connect, $email, $name, $password) {
+    $sql = 'INSERT INTO users (date_register, email, name, password) VALUES (NOW(), ?, ?, ?)';
+    $stmt = db_get_prepare_stmt($connect, $sql, [$email, $name, $password]);
+    $result = mysqli_stmt_execute($stmt);
+
+    return $result;
 }

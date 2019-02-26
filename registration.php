@@ -30,9 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if (empty($errors)) {
-        $email = mysqli_real_escape_string($connect, $form['email']);
-        $sql = "SELECT id FROM users WHERE email = '$email'";
-        $result = mysqli_query($connect, $sql);
+        $result = is_email($connect, $form['email']);
 
         // если запрос возвращает результат
         if (mysqli_num_rows($result) > 0) {
@@ -40,9 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } else {
             $password = password_hash($form['password'], PASSWORD_DEFAULT);
 
-            $sql = 'INSERT INTO users (date_register, email, name, password) VALUES (NOW(), ?, ?, ?)';
-            $stmt = db_get_prepare_stmt($connect, $sql, [$form['email'], $form['name'], $password]);
-            $result = mysqli_stmt_execute($stmt);
+            $result = add_user($connect, $form['email'], $form['name'], $password);
         }
 
         if ($result && empty($errors)) {
