@@ -1,6 +1,20 @@
 <?php
 require_once('./mysql_helper.php');
 
+/**
+ * Проверяет, что переданная дата соответствует формату ДД.ММ.ГГГГ
+ * @param string $date строка с датой
+ * @return bool
+ */
+function check_date_format($date) {
+    $result = false;
+    $regexp = '/(\d{2})\.(\d{2})\.(\d{4})/m';
+    if (preg_match($regexp, $date, $parts) && count($parts) == 4) {
+        $result = checkdate($parts[2], $parts[1], $parts[3]);
+    }
+    return $result;
+}
+
 function include_template($name, $data) {
     $name = 'templates/' . $name;
     $result = '';
@@ -128,7 +142,7 @@ function get_tasks_quantity_data($connect, $user) {
 
 // получает общее количество задач
 function get_all_tasks_quantity($connect, $user) {
-    $sql_tasks = 'SELECT COUNT(*) FROM tasks WHERE user_id = ?';
+    $sql_tasks = 'SELECT COUNT(*) FROM tasks WHERE status = 0 && user_id = ?';
 
     return get_data($connect, $sql_tasks, $user, false);
 }
