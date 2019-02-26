@@ -96,7 +96,7 @@
         </div>
 
         <?php if (!empty($user)): ?>
-            <a class="main-footer__button button button--plus" href="pages/form-task.html">Добавить задачу</a>
+            <a class="main-footer__button button button--plus" href="/add.php">Добавить задачу</a>
         <?php endif ?>
 
         <div class="main-footer__social social">
