@@ -8,8 +8,11 @@ setlocale(LC_ALL, 'ru_RU');
 require_once('./functions.php');
 require_once('./init.php');
 
-// Текущий юзер
-// $user_id = 3;
+if (empty($user)) {
+    http_response_code(401);
+    die();
+}
+
 $tasks_incoming = 0;
 
 // Получаем имя текущего пользователя
@@ -78,6 +81,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (count($errors)) {
     	$page_content = include_template('add.php', [
             'errors' => $errors,
+            'task' => $task,
             'projects' => $projects,
             'incoming' => $random_tasks['COUNT(*)'],
             'tasks_all' => $all_tasks['COUNT(*)'],

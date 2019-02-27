@@ -172,19 +172,23 @@ function get_tasks_quantity($connect, $user, $project = null) {
     $sql_undone = '&& status = 0';
     $sql_group_by = ' GROUP BY project_id';
 
-    // общее количество невыполненных
-    if ($project === 'all') {
-        $sql_tasks .= $sql_undone;
+    switch ($project) {
+        // общее количество невыполненных
+        case 'all':
+            $sql_tasks .= $sql_undone;
+            break;
 
-    // без проекта
-    } elseif ($project === 'incoming') {
-        $sql_tasks .= $sql_undone . $sql_null;
+        // без проекта
+        case 'incoming':
+            $sql_tasks .= $sql_undone . $sql_null;
+            break;
 
-    // невыполненных по каждому проекту
-    } else {
-        $sql_tasks .= $sql_undone . $sql_group_by;
+        // невыполненных по каждому проекту
+        default:
+            $sql_tasks .= $sql_undone . $sql_group_by;
 
-        return get_data($connect, $sql_tasks, $user);
+            return get_data($connect, $sql_tasks, $user);
+            break;
     }
 
     return get_data($connect, $sql_tasks, $user, false);

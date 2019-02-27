@@ -47,8 +47,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     	}
 
         if ($result && empty($errors)) {
-            var_dump($_SESSION['user']);
-            var_dump($user);
             header("Location: /");
             exit();
         }
