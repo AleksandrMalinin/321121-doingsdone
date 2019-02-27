@@ -31,7 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $errors = [];
 
     foreach ($required as $key) {
-		if (empty($_POST[$key])) {
+        if (empty($_POST[$key])) {
             $errors[$key] = 'Заполните это поле';
 		}
 	}
