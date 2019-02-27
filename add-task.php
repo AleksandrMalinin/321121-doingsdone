@@ -73,7 +73,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if (count($errors)) {
-    	$page_content = include_template('add.php', [
+    	$page_content = include_template('add-task.php', [
             'errors' => $errors,
             'form' => $form,
             'projects' => $projects,
@@ -88,7 +88,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 } else {
     // Передаём массив с проектами в шаблон
-    $page_content = include_template('add.php', [
+    $page_content = include_template('add-task.php', [
         'projects' => $projects,
         'incoming' => $random_tasks['COUNT(*)'],
         'tasks_all' => $all_tasks['COUNT(*)'],

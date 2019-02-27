@@ -43,11 +43,11 @@
                     <ul class="main-navigation__list">
                         <li class="main-navigation__list-item">
                             <a class="main-navigation__list-item-link" href="/index.php?id=all">Все</a>
-                            <span class="main-navigation__list-item-count"><?=$tasks_all; ?></span>
+                            <span class="main-navigation__list-item-count"><?= $tasks_all; ?></span>
                         </li>
                         <li class="main-navigation__list-item">
                             <a class="main-navigation__list-item-link" href="/index.php?id=incoming">Входящие</a>
-                            <span class="main-navigation__list-item-count"><?=$incoming; ?></span>
+                            <span class="main-navigation__list-item-count"><?= $incoming; ?></span>
                         </li>
                         <?php foreach ($projects as $project): ?>
                             <?=include_template('project.php', ['project' => $project]); ?>
