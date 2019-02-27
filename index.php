@@ -1,18 +1,9 @@
 <?php
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-
-date_default_timezone_set("Europe/Moscow");
-setlocale(LC_ALL, 'ru_RU');
-
 require_once('./functions.php');
 require_once('./init.php');
 
 // Показывать или нет выполненные задачи
 $show_complete_tasks = rand(0, 1);
-
-// Текущий юзер
-// $user_id = 3;
 
 // Получаем имя текущего пользователя
 $users = get_users_data($connect, $user_id);

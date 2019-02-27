@@ -70,7 +70,7 @@
 
             <label class="form__label" for="name">Название <sup>*</sup></label>
 
-            <input class="form__input <?=$classname; ?>" type="text" name="name" id="name" value="<?= $task['name'] ?? ''; ?>" placeholder="Введите название">
+            <input class="form__input <?=$classname; ?>" type="text" name="name" id="name" value="<?= $form['name'] ?? ''; ?>" placeholder="Введите название">
             <p class="form__message"><?= $classname ? $errors['name'] : ''; ?></p>
           </div>
 
