@@ -1,6 +1,20 @@
 <?php
 require_once('./mysql_helper.php');
 
+/**
+ * Проверяет, что переданная дата соответствует формату ДД.ММ.ГГГГ
+ * @param string $date строка с датой
+ * @return bool
+ */
+function check_date_format($date) {
+    $result = false;
+    $regexp = '/(\d{2})\.(\d{2})\.(\d{4})/m';
+    if (preg_match($regexp, $date, $parts) && count($parts) == 4) {
+        $result = checkdate($parts[2], $parts[1], $parts[3]);
+    }
+    return $result;
+}
+
 function include_template($name, $data) {
     $name = 'templates/' . $name;
     $result = '';
@@ -18,6 +32,7 @@ function include_template($name, $data) {
     return $result;
 }
 
+// проверяет задачу на срочность
 function check_urgency($task_deadline_str, $status) {
     $urgency = false;
 
@@ -37,6 +52,24 @@ function check_urgency($task_deadline_str, $status) {
     }
 
     return $urgency;
+}
+
+// проверяет на существование проекта
+function is_project($connect, $user_id, $project_id) {
+    // проверяет что задача ссылается на существующий проект
+    $sql_project = 'SELECT * FROM projects WHERE user_id = ? AND id = ' . $project_id;
+    $project = get_data($connect, $sql_project, $user_id);
+
+    return $project;
+}
+
+// проверяет на существование email
+function is_email($connect, $email) {
+    $email_escaped = mysqli_real_escape_string($connect, $email);
+    $sql = "SELECT id FROM users WHERE email = '$email_escaped'";
+    $result = mysqli_query($connect, $sql);
+
+    return $result;
 }
 
 // получает массив данных
@@ -119,25 +152,29 @@ function get_tasks_data($connect, $user, $bool, $id = false) {
     return get_data($connect, $sql_tasks, $user);
 }
 
-// получает количество невыполненных задач по каждому проекту
-function get_tasks_quantity_data($connect, $user) {
-    $sql_tasks_quantity = 'SELECT COUNT(*) FROM tasks WHERE status = 0 && user_id = ? GROUP BY project_id';
-
-    return get_data($connect, $sql_tasks_quantity, $user);
-}
-
-// получает общее количество задач
-function get_all_tasks_quantity($connect, $user) {
+// получает количество задач
+function get_tasks_quantity($connect, $user, $project = null) {
     $sql_tasks = 'SELECT COUNT(*) FROM tasks WHERE user_id = ?';
+    $sql_null = ' && project_id IS NULL';
+    $sql_undone = '&& status = 0';
+    $sql_group_by = ' GROUP BY project_id';
+
+    // общее количество невыполненных
+    if ($project === 'all') {
+        $sql_tasks .= $sql_undone;
+
+    // без проекта
+    } elseif ($project === 'incoming') {
+        $sql_tasks .= $sql_undone . $sql_null;
+
+    // невыполненных по каждому проекту
+    } else {
+        $sql_tasks .= $sql_undone . $sql_group_by;
+
+        return get_data($connect, $sql_tasks, $user);
+    }
 
     return get_data($connect, $sql_tasks, $user, false);
-}
-
-// получает количество задач без проекта
-function get_random_tasks_quantity($connect, $user) {
-    $sql_tasks_quantity = 'SELECT COUNT(*) FROM tasks WHERE user_id = ? && project_id IS NULL';
-
-    return get_data($connect, $sql_tasks_quantity, $user, false);
 }
 
 // делает запрос для юзеров
@@ -147,19 +184,18 @@ function get_users_data($connect, $user) {
     return get_data($connect, $sql_users, $user, false);
 }
 
-// проверка на существование проекта
-function is_project($connect, $user_id, $project_id) {
-    // проверяет что задача ссылается на существующий проект
-    $sql_project = 'SELECT * FROM projects WHERE user_id = ? AND id = ' . $project_id;
-    $project = get_data($connect, $sql_project, $user_id);
-
-    return $project;
-}
-
 // добавляет новую задачу
 function add_task($connect, $task, $user, $deadline = NULL, $project = NULL, $file = NULL) {
     $sql = 'INSERT INTO tasks (name, status, user_id, date_deadline, project_id, file) VALUES (?, 0, ?, ?, ?, ?)';
 
     $stmt = db_get_prepare_stmt($connect, $sql, [$task, $user, $deadline, $project, $file]);
     mysqli_stmt_execute($stmt);
+}
+
+function add_user($connect, $email, $name, $password) {
+    $sql = 'INSERT INTO users (date_register, email, name, password) VALUES (NOW(), ?, ?, ?)';
+    $stmt = db_get_prepare_stmt($connect, $sql, [$email, $name, $password]);
+    $result = mysqli_stmt_execute($stmt);
+
+    return $result;
 }
