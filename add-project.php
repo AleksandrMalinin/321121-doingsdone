@@ -33,7 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 	}
 
     if (!empty($form['name'])) {
-        // проверяет что задача ссылается на существующий проект
+        // проверяет отсутствие у юзера проекта с таким именем
         $project = is_project($connect, $user_id, $form['name']);
 
         if ($project) {
@@ -55,7 +55,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         header("Location: /");
     }
 } else {
-    // Передаём массив с проектами в шаблон
     $page_content = include_template('add-project.php', [
         'projects' => $projects,
         'incoming' => $random_tasks['COUNT(*)'],

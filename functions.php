@@ -137,6 +137,7 @@ function get_projects_data($connect, $user, $quantity) {
     if (!empty($initial_projects)) {
         // собираем ассоциативный массив каждого проекта
         for ($i = 0; $i < count($initial_projects); $i++) {
+            // если у проекта уже существуют задачи
             if (!empty($quantity)) {
                 $tasks_count = $quantity[$i]['COUNT(*)'];
             } else {
