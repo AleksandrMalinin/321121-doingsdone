@@ -24,7 +24,7 @@ $all_tasks = get_tasks_quantity($connect, $user_id, 'all');
 $random_tasks = get_tasks_quantity($connect, $user_id, 'incoming');
 
 // Проверяем был ли передан параметр запроса
-if (isset($_GET['id']) && $_GET['id'] !== 'all') {
+if (isset($_GET['id'])) {
     if ($_GET['id'] === 'incoming') {
         $id = NULL;
     } else {
@@ -38,6 +38,8 @@ if (isset($_GET['id']) && $_GET['id'] !== 'all') {
         http_response_code(404);
         die();
     }
+} else {
+    $_GET['id'] = 'all';
 }
 
 // Передаём массив с задачами в шаблон

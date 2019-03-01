@@ -42,7 +42,7 @@
                 <nav class="main-navigation">
                     <ul class="main-navigation__list">
                         <li class="main-navigation__list-item">
-                            <a class="main-navigation__list-item-link" href="/index.php?id=all">Все</a>
+                            <a class="main-navigation__list-item-link" href="/">Все</a>
                             <span class="main-navigation__list-item-count"><?= $tasks_all; ?></span>
                         </li>
                         <li class="main-navigation__list-item">
