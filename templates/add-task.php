@@ -4,85 +4,111 @@
 <head>
     <meta charset="UTF-8">
     <title><?= $title; ?></title>
-    <link rel="stylesheet" href="css/normalize.css">
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/flatpickr.min.css">
+    <link rel="stylesheet" href="../css/normalize.css">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/flatpickr.min.css">
 </head>
 
-<body <?php if (empty($user)): ?>class="body-background"<?php endif ?>>
+<body>
 <h1 class="visually-hidden">Дела в порядке</h1>
 
 <div class="page-wrapper">
-    <div class="container <?php if (!empty($user)): ?>container--with-sidebar<?php endif ?>">
+    <div class="container container--with-sidebar">
         <header class="main-header">
             <a href="/">
-                <img src="img/logo.png" width="153" height="42" alt="Логотип Дела в порядке">
+                <img src="../img/logo.png" width="153" height="42" alt="Логитип Дела в порядке">
             </a>
 
             <div class="main-header__side">
-                <?php if (!empty($user)): ?>
-                    <a class="main-header__side-item button button--plus open-modal" href="/add-task.php">Добавить задачу</a>
-                <?php endif ?>
+                <a class="main-header__side-item button button--plus" href="#">Добавить задачу</a>
 
                 <div class="main-header__side-item user-menu">
-                    <?php if (!empty($user)): ?>
-                        <div class="user-menu__image">
-                            <img src="img/user.png" width="40" height="40" alt="Пользователь">
-                        </div>
+                    <div class="user-menu__image">
+                        <img src="../img/user.png" width="40" height="40" alt="Пользователь">
+                    </div>
 
-                        <div class="user-menu__data">
-                            <p><?= $user; ?></p>
-                            <a href="/logout.php">Выйти</a>
-                        </div>
-                    <?php else: ?>
-                        <a class="main-header__side-item button button--transparent" href="/auth.php">Войти</a>
-                    <?php endif ?>
+                    <div class="user-menu__data">
+                        <p><?=$user; ?></p>
+                        <a href="/logout.php">Выйти</a>
+                    </div>
                 </div>
             </div>
         </header>
 
         <div class="content">
-            <?php if (!empty($user)): ?>
-                <section class="content__side">
-                    <h2 class="content__side-heading">Проекты</h2>
+            <section class="content__side">
+                <h2 class="content__side-heading">Проекты</h2>
 
-                    <nav class="main-navigation">
-                        <ul class="main-navigation__list">
-                            <li class="main-navigation__list-item <?php if ($_GET['id'] === 'all'): ?>main-navigation__list-item--active<?php endif ?>">
-                                <a class="main-navigation__list-item-link" href="/index.php?id=all">Все</a>
-                                <span class="main-navigation__list-item-count"><?= $tasks_all; ?></span>
-                            </li>
-                            <li class="main-navigation__list-item <?php if ($_GET['id'] === 'incoming'): ?>main-navigation__list-item--active<?php endif ?>">
-                                <a class="main-navigation__list-item-link" href="/index.php?id=incoming">Входящие</a>
-                                <span class="main-navigation__list-item-count"><?= $incoming; ?></span>
-                            </li>
+                <nav class="main-navigation">
+                    <ul class="main-navigation__list">
+                        <li class="main-navigation__list-item">
+                            <a class="main-navigation__list-item-link" href="/index.php?id=all">Все</a>
+                            <span class="main-navigation__list-item-count"><?= $tasks_all; ?></span>
+                        </li>
+                        <li class="main-navigation__list-item">
+                            <a class="main-navigation__list-item-link" href="/index.php?id=incoming">Входящие</a>
+                            <span class="main-navigation__list-item-count"><?= $incoming; ?></span>
+                        </li>
+                        <?php foreach ($projects as $project): ?>
+                            <?=include_template('project.php', ['project' => $project]); ?>
+                        <?php endforeach ?>
+                    </ul>
+                </nav>
 
-                            <?php foreach ($projects as $project): ?>
-                                <?=include_template('project.php', ['project' => $project]); ?>
-                            <?php endforeach ?>
-                        </ul>
-                    </nav>
+                <a class="button button--transparent button--plus content__side-button" href="form-project.html">Добавить проект</a>
+            </section>
 
-                    <a class="button button--transparent button--plus content__side-button" href="/add-project.php" target="project_add">Добавить проект</a>
-                </section>
+            <main class="content__main">
+                <h2 class="content__main-heading">Добавление задачи</h2>
 
-                <main class="content__main">
-                    <?= $content; ?>
-                </main>
+                <form class="form"  action="" method="post" enctype="multipart/form-data">
+                    <div class="form__row">
+                        <?php $classname = isset($errors['name']) ? 'form__input--error' : ''; ?>
 
-            <?php else: ?>
-
-                <section class="welcome">
-                    <h2 class="welcome__heading">«Дела в порядке»</h2>
-
-                    <div class="welcome__text">
-                        <p>«Дела в порядке» — это веб приложение для удобного ведения списка дел. Сервис помогает пользователям не забывать о предстоящих важных событиях и задачах.</p>
-                        <p>После создания аккаунта, пользователь может начать вносить свои дела, деля их по проектам и указывая сроки.</p>
+                        <label class="form__label" for="name">Название <sup>*</sup></label>
+                        <input class="form__input <?= $classname; ?>" type="text" name="name" id="name" value="<?= $form['name'] ?? ''; ?>" placeholder="Введите название">
+                        <p class="form__message"><?= $classname ? $errors['name'] : ''; ?></p>
                     </div>
 
-                    <a class="welcome__button button" href="/registration.php">Зарегистрироваться</a>
-                </section>
-            <?php endif ?>
+                    <div class="form__row">
+                        <?php $classname = isset($errors['project']) ? 'form__input--error' : ''; ?>
+                        <label class="form__label" for="project">Проект</label>
+
+                        <select class="form__input form__input--select" name="project" id="project">
+                            <option value="incoming">Входящие</option>
+
+                            <?php foreach ($projects as $project): ?>
+                                <option value="<?= $project['id']; ?>"><?= $project['name']; ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                        <p class="form__message"><?= $classname ? $errors['project'] : ''; ?></p>
+                    </div>
+
+                    <div class="form__row">
+                        <?php
+                            $classname = isset($errors['date']) ? 'form__input--error' : '';
+                            $value = isset($task['date']) ? $task['date'] : '';
+                        ?>
+
+                        <label class="form__label" for="date">Дата выполнения</label>
+                        <input class="form__input form__input--date" type="date" name="date" id="date" value="" placeholder="Введите дату в формате ДД.ММ.ГГГГ">
+                        <p class="form__message"><?= $classname ? $errors['date'] : ''; ?></p>
+                    </div>
+
+                    <div class="form__row">
+                        <label class="form__label" for="preview">Файл</label>
+                        <div class="form__input-file">
+                            <input class="visually-hidden" type="file" name="preview" id="preview" value="">
+                            <label class="button button--transparent" for="preview">
+                                <span>Выберите файл</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form__row form__row--controls">
+                        <input class="button" type="submit" name="" value="Добавить">
+                    </div>
+                </form>
+            </main>
         </div>
     </div>
 </div>
@@ -91,13 +117,10 @@
     <div class="container">
         <div class="main-footer__copyright">
             <p>© 2019, «Дела в порядке»</p>
-
             <p>Веб-приложение для удобного ведения списка дел.</p>
         </div>
 
-        <?php if (!empty($user)): ?>
-            <a class="main-footer__button button button--plus" href="/add-task.php">Добавить задачу</a>
-        <?php endif ?>
+        <a class="main-footer__button button button--plus" href="#">Добавить задачу</a>
 
         <div class="main-footer__social social">
             <span class="visually-hidden">Мы в соцсетях:</span>
@@ -137,13 +160,12 @@
         <div class="main-footer__developed-by">
             <span class="visually-hidden">Разработано:</span>
             <a href="https://htmlacademy.ru/intensive/php">
-                <img src="img/htmlacademy.svg" alt="HTML Academy" width="118" height="40">
+                <img src="../img/htmlacademy.svg" alt="HTML Academy" width="118" height="40">
             </a>
         </div>
     </div>
 </footer>
-
-<script src="flatpickr.js"></script>
-<script src="script.js"></script>
+<script src="../flatpickr.js"></script>
+<script src="../script.js"></script>
 </body>
 </html>

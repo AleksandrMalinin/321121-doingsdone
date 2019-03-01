@@ -3,14 +3,14 @@
 /**
  * Создает подготовленное выражение на основе готового SQL запроса и переданных данных
  *
- * @param $link mysqli Ресурс соединения
+ * @param $connect mysqli Ресурс соединения
  * @param $sql string SQL запрос с плейсхолдерами вместо значений
  * @param array $data Данные для вставки на место плейсхолдеров
  *
  * @return mysqli_stmt Подготовленное выражение
  */
-function db_get_prepare_stmt($link, $sql, $data = []) {
-    $stmt = mysqli_prepare($link, $sql);
+function db_get_prepare_stmt($connect, $sql, $data = []) {
+    $stmt = mysqli_prepare($connect, $sql);
 
     if ($data) {
         $types = '';

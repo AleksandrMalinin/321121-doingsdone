@@ -1,15 +1,12 @@
 <?php
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-
-date_default_timezone_set("Europe/Moscow");
-setlocale(LC_ALL, 'ru_RU');
-
 require_once('./functions.php');
 require_once('./init.php');
 
-// Текущий юзер
-$user_id = 3;
+if (empty($user)) {
+    http_response_code(401);
+    die();
+}
+
 $tasks_incoming = 0;
 
 // Получаем имя текущего пользователя
@@ -28,38 +25,38 @@ $all_tasks = get_tasks_quantity($connect, $user_id, 'all');
 $random_tasks = get_tasks_quantity($connect, $user_id, 'incoming');
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $task = $_POST;
+    $form = $_POST;
 
     $required = ['name'];
     $errors = [];
 
     foreach ($required as $key) {
-		if (empty($_POST[$key])) {
+        if (empty($_POST[$key])) {
             $errors[$key] = 'Заполните это поле';
 		}
 	}
 
     $deadline = NULL;
     // если дата установлена
-    if (!empty($task['date'])) {
-        $date = check_date_format($task['date']);
+    if (!empty($form['date'])) {
+        $date = check_date_format($form['date']);
 
         if (!$date) {
             $errors['date'] = 'Заполните поле в указанном формате';
-        } else if (strtotime($task['date']) < time()) {
+        } else if (strtotime($form['date']) < time()) {
             $errors['date'] = 'Дата должна быть больше текущей';
         } else {
-            $deadline = date('Y.m.d 23:59:59', strtotime($task['date']));
+            $deadline = date('Y.m.d 23:59:59', strtotime($form['date']));
         }
     }
 
     $project_id = NULL;
-    if ($task['project'] !== 'incoming') {
+    if ($form['project'] !== 'incoming') {
         // проверяет что задача ссылается на существующий проект
-        $project = is_project($connect, $user_id, intval($task['project']));
+        $project = is_project($connect, $user_id, intval($form['project']));
 
         if ($project) {
-            $project_id = intval($task['project']);
+            $project_id = intval($form['project']);
         } else {
             $errors['project'] = 'Такого проекта не существует';
         }
@@ -76,8 +73,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if (count($errors)) {
-    	$page_content = include_template('add.php', [
+    	$page_content = include_template('add-task.php', [
             'errors' => $errors,
+            'form' => $form,
             'projects' => $projects,
             'incoming' => $random_tasks['COUNT(*)'],
             'tasks_all' => $all_tasks['COUNT(*)'],
@@ -85,12 +83,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'title' => 'Дела в порядке - Добавление задачи'
         ]);
     } else {
-        add_task($connect, $task['name'], $user_id, $deadline, $project_id, $file);
+        add_task($connect, $form['name'], $user_id, $deadline, $project_id, $file);
         header("Location: /");
     }
 } else {
     // Передаём массив с проектами в шаблон
-    $page_content = include_template('add.php', [
+    $page_content = include_template('add-task.php', [
         'projects' => $projects,
         'incoming' => $random_tasks['COUNT(*)'],
         'tasks_all' => $all_tasks['COUNT(*)'],

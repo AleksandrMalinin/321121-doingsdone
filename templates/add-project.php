@@ -3,10 +3,9 @@
 
 <head>
   <meta charset="UTF-8">
-  <title><?=$title; ?></title>
+  <title><?= $title; ?></title>
   <link rel="stylesheet" href="../css/normalize.css">
   <link rel="stylesheet" href="../css/style.css">
-  <link rel="stylesheet" href="../css/flatpickr.min.css">
 </head>
 
 <body>
@@ -15,12 +14,12 @@
 <div class="page-wrapper">
   <div class="container container--with-sidebar">
     <header class="main-header">
-      <a href="#">
+      <a href="/">
         <img src="../img/logo.png" width="153" height="42" alt="Логитип Дела в порядке">
       </a>
 
       <div class="main-header__side">
-        <a class="main-header__side-item button button--plus" href="form-task.html">Добавить задачу</a>
+        <a class="main-header__side-item button button--plus" href="/add-task.php">Добавить задачу</a>
 
         <div class="main-header__side-item user-menu">
           <div class="user-menu__image">
@@ -28,9 +27,9 @@
           </div>
 
           <div class="user-menu__data">
-              <p><?=$user; ?></p>
+            <p><?= $user; ?></p>
 
-            <a href="#">Выйти</a>
+            <a href="/logout.php">Выйти</a>
           </div>
         </div>
       </div>
@@ -44,11 +43,11 @@
             <ul class="main-navigation__list">
                 <li class="main-navigation__list-item">
                     <a class="main-navigation__list-item-link" href="/index.php?id=all">Все</a>
-                    <span class="main-navigation__list-item-count"><?=$tasks_all; ?></span>
+                    <span class="main-navigation__list-item-count"><?= $tasks_all; ?></span>
                 </li>
                 <li class="main-navigation__list-item">
                     <a class="main-navigation__list-item-link" href="/index.php?id=incoming">Входящие</a>
-                    <span class="main-navigation__list-item-count"><?=$incoming; ?></span>
+                    <span class="main-navigation__list-item-count"><?= $incoming; ?></span>
                 </li>
                 <?php foreach ($projects as $project): ?>
                     <?=include_template('project.php', ['project' => $project]); ?>
@@ -56,61 +55,19 @@
             </ul>
         </nav>
 
-        <a class="button button--transparent button--plus content__side-button" href="form-project.html">Добавить проект</a>
+        <a class="button button--transparent button--plus content__side-button" href="#">Добавить проект</a>
       </section>
 
       <main class="content__main">
-        <h2 class="content__main-heading">Добавление задачи</h2>
+        <h2 class="content__main-heading">Добавление проекта</h2>
 
-        <form class="form"  action="" method="post" enctype="multipart/form-data">
+        <form class="form"  action="" method="post">
           <div class="form__row">
-            <?php
-                $classname = isset($errors['name']) ? 'form__input--error' : '';
-            ?>
+              <?php $classname = isset($errors['name']) ? 'form__input--error' : ''; ?>
 
-            <label class="form__label" for="name">Название <sup>*</sup></label>
-
-            <input class="form__input <?=$classname; ?>" type="text" name="name" id="name" value="" placeholder="Введите название">
+            <label class="form__label" for="project_name">Название <sup>*</sup></label>
+            <input class="form__input <?= $classname; ?>" type="text" name="name" id="project_name" value="" placeholder="Введите название проекта">
             <p class="form__message"><?= $classname ? $errors['name'] : ''; ?></p>
-          </div>
-
-          <div class="form__row">
-            <?php
-                $classname = isset($errors['project']) ? 'form__input--error' : '';
-            ?>
-            <label class="form__label" for="project">Проект</label>
-
-            <select class="form__input form__input--select" name="project" id="project">
-                <option value="incoming">Входящие</option>
-                <?php foreach ($projects as $project): ?>
-                    <option value="<?= $project['id']; ?>"><?= $project['name']; ?></option>
-                <?php endforeach; ?>
-            </select>
-            <p class="form__message"><?= $classname ? $errors['project'] : ''; ?></p>
-          </div>
-
-          <div class="form__row">
-            <?php
-                $classname = isset($errors['date']) ? 'form__input--error' : '';
-                $value = isset($task['date']) ? $task['date'] : '';
-            ?>
-
-            <label class="form__label" for="date">Дата выполнения</label>
-
-            <input class="form__input form__input--date" type="date" name="date" id="date" value="" placeholder="Введите дату в формате ДД.ММ.ГГГГ">
-            <p class="form__message"><?= $classname ? $errors['date'] : ''; ?></p>
-          </div>
-
-          <div class="form__row">
-            <label class="form__label" for="preview">Файл</label>
-
-            <div class="form__input-file">
-              <input class="visually-hidden" type="file" name="preview" id="preview" value="">
-
-              <label class="button button--transparent" for="preview">
-                <span>Выберите файл</span>
-              </label>
-            </div>
           </div>
 
           <div class="form__row form__row--controls">
@@ -130,7 +87,7 @@
       <p>Веб-приложение для удобного ведения списка дел.</p>
     </div>
 
-    <a class="main-footer__button button button--plus" href="form-task.html">Добавить задачу</a>
+    <a class="main-footer__button button button--plus" href="/add-task.php">Добавить задачу</a>
 
     <div class="main-footer__social social">
       <span class="visually-hidden">Мы в соцсетях:</span>
@@ -180,7 +137,5 @@
     </div>
   </div>
 </footer>
-<script src="../flatpickr.js"></script>
-<script src="../script.js"></script>
 </body>
 </html>

@@ -9,9 +9,11 @@ require_once('./mysql_helper.php');
 function check_date_format($date) {
     $result = false;
     $regexp = '/(\d{2})\.(\d{2})\.(\d{4})/m';
+
     if (preg_match($regexp, $date, $parts) && count($parts) == 4) {
         $result = checkdate($parts[2], $parts[1], $parts[3]);
     }
+
     return $result;
 }
 
@@ -55,15 +57,24 @@ function check_urgency($task_deadline_str, $status) {
 }
 
 // проверяет на существование проекта
-function is_project($connect, $user_id, $project_id) {
+function is_project($connect, $user_id, $project) {
+    $sql_project = 'SELECT * FROM projects WHERE user_id = ? AND ';
+    $sql_id = "id = '$project'";
+    $sql_name = "name = '$project'";
+
     // проверяет что задача ссылается на существующий проект
-    $sql_project = 'SELECT * FROM projects WHERE user_id = ? AND id = ' . $project_id;
+    if (is_int($project)) {
+        $sql_project .= $sql_id;
+    } else {
+        $sql_project .= $sql_name;
+    }
+
     $project = get_data($connect, $sql_project, $user_id);
 
     return $project;
 }
 
-// проверяет на существование email
+// проверяет на существование email // TODO: Объединить в одну функцию
 function is_email($connect, $email) {
     $email_escaped = mysqli_real_escape_string($connect, $email);
     $sql = "SELECT id FROM users WHERE email = '$email_escaped'";
@@ -72,20 +83,29 @@ function is_email($connect, $email) {
     return $result;
 }
 
+// проверяет на существование юзера // TODO: Объединить в одну функцию
+function is_user($connect, $email) {
+    $email_escaped = mysqli_real_escape_string($connect, $email);
+    $sql = "SELECT * FROM users WHERE email = '$email_escaped'";
+    $result = mysqli_query($connect, $sql);
+
+    return $result;
+}
+
 // получает массив данных
-function get_data($con, $sql, $user = [], $bool = true) {
+function get_data($connect, $sql, $user = [], $bool = true) {
     $data = null;
 
-    if (!$con) {
+    if (!$connect) {
         $error = mysqli_connect_error();
         print('Connection error: ' . $error);
     } else {
-        $stmt = db_get_prepare_stmt($con, $sql, [$user]);
+        $stmt = db_get_prepare_stmt($connect, $sql, [$user]);
         mysqli_stmt_execute($stmt);
         $result = mysqli_stmt_get_result($stmt);
 
         if (!$result) {
-            $error = mysqli_error($con);
+            $error = mysqli_error($connect);
             print('MYSQL error: ' . $error);
         } else {
             $data = check_multiline_data($bool, $data, $result);
@@ -111,20 +131,28 @@ function get_projects_data($connect, $user, $quantity) {
     $sql_projects = 'SELECT * FROM projects WHERE user_id = ?';
 
     $initial_projects = get_data($connect, $sql_projects, $user);
+    $projects = [];
 
-    // собираем ассоциативный массив каждого проекта
-    for ($i = 0; $i < count($initial_projects); $i++) {
-        $tasks_count = $quantity[$i];
+    // если у юзера есть проекты
+    if (!empty($initial_projects)) {
+        // собираем ассоциативный массив каждого проекта
+        for ($i = 0; $i < count($initial_projects); $i++) {
+            if (!empty($quantity)) {
+                $tasks_count = $quantity[$i]['COUNT(*)'];
+            } else {
+                $tasks_count = 0;
+            }
 
-        $project = [
-            'id' => $initial_projects[$i]['id'],
-            'name' => $initial_projects[$i]['name'],
-            'tasks_count' => $tasks_count['COUNT(*)'],
-            'link' => '/index.php?id=' . $initial_projects[$i]['id']
-        ];
+            $project = [
+                'id' => $initial_projects[$i]['id'],
+                'name' => $initial_projects[$i]['name'],
+                'tasks_count' => $tasks_count,
+                'link' => '/index.php?id=' . $initial_projects[$i]['id']
+            ];
 
-        // собираем массив с проектами
-        $projects[] = $project;
+            // собираем массив с проектами
+            $projects[] = $project;
+        }
     }
 
     return $projects;
@@ -156,22 +184,25 @@ function get_tasks_data($connect, $user, $bool, $id = false) {
 function get_tasks_quantity($connect, $user, $project = null) {
     $sql_tasks = 'SELECT COUNT(*) FROM tasks WHERE user_id = ?';
     $sql_null = ' && project_id IS NULL';
-    $sql_undone = '&& status = 0';
-    $sql_group_by = ' GROUP BY project_id';
+    $sql_undone = ' && status = 0';
+    $sql_group_by = ' && project_id IS NOT NULL GROUP BY project_id';
 
-    // общее количество невыполненных
-    if ($project === 'all') {
-        $sql_tasks .= $sql_undone;
+    switch ($project) {
+        // общее количество невыполненных
+        case 'all':
+            $sql_tasks .= $sql_undone;
+            break;
 
-    // без проекта
-    } elseif ($project === 'incoming') {
-        $sql_tasks .= $sql_undone . $sql_null;
+        // без проекта
+        case 'incoming':
+            $sql_tasks .= $sql_undone . $sql_null;
+            break;
 
-    // невыполненных по каждому проекту
-    } else {
-        $sql_tasks .= $sql_undone . $sql_group_by;
-
-        return get_data($connect, $sql_tasks, $user);
+        // невыполненных по каждому проекту
+        default:
+            $sql_tasks .= $sql_undone . $sql_group_by;
+            return get_data($connect, $sql_tasks, $user);
+            break;
     }
 
     return get_data($connect, $sql_tasks, $user, false);
@@ -192,10 +223,36 @@ function add_task($connect, $task, $user, $deadline = NULL, $project = NULL, $fi
     mysqli_stmt_execute($stmt);
 }
 
+// добавляет новый проект
+function add_project($connect, $project, $user) {
+    $sql = 'INSERT INTO projects (name, user_id) VALUES (?, ?)';
+
+    $stmt = db_get_prepare_stmt($connect, $sql, [$project, $user]);
+    mysqli_stmt_execute($stmt);
+}
+
+// добавляет нового юзера
 function add_user($connect, $email, $name, $password) {
     $sql = 'INSERT INTO users (date_register, email, name, password) VALUES (NOW(), ?, ?, ?)';
+
     $stmt = db_get_prepare_stmt($connect, $sql, [$email, $name, $password]);
     $result = mysqli_stmt_execute($stmt);
 
     return $result;
+}
+
+function change_task_status($connect, $task_id, $task_status) {
+    var_dump($task_status);
+    if ($task_status) {
+        $task_status = 0;
+    } else {
+        $task_status = 1;
+    }
+
+    $sql = 'UPDATE tasks SET status = ' . $task_status . ' WHERE id = ?';
+
+    var_dump($sql);
+
+    $stmt = db_get_prepare_stmt($connect, $sql, [$task_id]);
+    mysqli_stmt_execute($stmt);
 }
