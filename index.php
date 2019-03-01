@@ -40,6 +40,13 @@ if (isset($_GET['id']) && $_GET['id'] !== 'all') {
     }
 }
 
+if (isset($_GET['task_id'])) {
+    $task_id = intval($_GET['task_id']);
+    $task_status = intval($_GET['check']);
+
+    change_task_status($connect, $task_id, $task_status);
+}
+
 // Передаём массив с задачами в шаблон
 $page_content = include_template('index.php', ['show_complete_tasks' => $show_complete_tasks, 'tasks' => $tasks]);
 

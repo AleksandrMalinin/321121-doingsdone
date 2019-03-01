@@ -240,3 +240,19 @@ function add_user($connect, $email, $name, $password) {
 
     return $result;
 }
+
+function change_task_status($connect, $task_id, $task_status) {
+    var_dump($task_status);
+    if ($task_status) {
+        $task_status = 0;
+    } else {
+        $task_status = 1;
+    }
+
+    $sql = 'UPDATE tasks SET status = ' . $task_status . ' WHERE id = ?';
+
+    var_dump($sql);
+
+    $stmt = db_get_prepare_stmt($connect, $sql, [$task_id]);
+    mysqli_stmt_execute($stmt);
+}
