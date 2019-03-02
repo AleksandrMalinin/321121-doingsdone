@@ -3,12 +3,14 @@
     <?php if (check_urgency($task['date_deadline'], $task['status'])): ?>task--important<?php endif ?>"
 >
     <td class="task__select">
-        <a href="/">
-            <label class="checkbox task__checkbox">
+        <?php $project = $task['project_id'] ?? 'incoming'; ?>
+
+        <label class="checkbox task__checkbox">
+            <a class="task__link" href="<?= '/index.php?id=' . $project . '&task_id=' . $task['id'] . '&check=' . $task['status']; ?>">
                 <input class="checkbox__input visually-hidden task__checkbox" type="checkbox" value="<?= $task['status']; ?>" <?php if ($task['status']): ?>checked<?php endif ?>>
                 <span class="checkbox__text"><?= strip_tags($task['name']); ?></span>
-            </label>
-        </a>
+            </a>
+        </label>
     </td>
 
     <td class="task__file">

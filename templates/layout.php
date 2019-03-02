@@ -49,7 +49,7 @@
                     <nav class="main-navigation">
                         <ul class="main-navigation__list">
                             <li class="main-navigation__list-item <?php if ($_GET['id'] === 'all'): ?>main-navigation__list-item--active<?php endif ?>">
-                                <a class="main-navigation__list-item-link" href="/">Все</a>
+                                <a class="main-navigation__list-item-link" href="/index.php?id=all">Все</a>
                                 <span class="main-navigation__list-item-count"><?= $tasks_all; ?></span>
                             </li>
                             <li class="main-navigation__list-item <?php if ($_GET['id'] === 'incoming'): ?>main-navigation__list-item--active<?php endif ?>">

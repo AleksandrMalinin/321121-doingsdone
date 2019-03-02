@@ -137,12 +137,7 @@ function get_projects_data($connect, $user, $quantity) {
     if (!empty($initial_projects)) {
         // собираем ассоциативный массив каждого проекта
         for ($i = 0; $i < count($initial_projects); $i++) {
-            // если у проекта уже существуют задачи
-            if (!empty($quantity)) {
-                $tasks_count = $quantity[$i]['COUNT(*)'];
-            } else {
-                $tasks_count = 0;
-            }
+            $tasks_count = $quantity[$i]['COUNT(*)'] ?? 0;
 
             $project = [
                 'id' => $initial_projects[$i]['id'],
@@ -165,13 +160,17 @@ function get_tasks_data($connect, $user, $bool, $id = false) {
     $null_condition = ' AND project_id IS NULL';
     $sql_tasks = 'SELECT * FROM tasks WHERE user_id = ?';
 
-    if ($id && !is_null($id)) {
+    if ($id && is_int($id)) {
         $sql_project_id = ' AND project_id = ' . $id;
         $sql_tasks .= $sql_project_id;
     }
 
-    if (is_null($id)) {
+    if ($id === 'incoming') {
         $sql_tasks .= $null_condition;
+    }
+
+    if ($id === 'all' && $bool) {
+        $sql_tasks .= $additional_condition;
     }
 
     if (!$bool) {
@@ -242,8 +241,8 @@ function add_user($connect, $email, $name, $password) {
     return $result;
 }
 
+// меняет статус задачи
 function change_task_status($connect, $task_id, $task_status) {
-    var_dump($task_status);
     if ($task_status) {
         $task_status = 0;
     } else {
@@ -251,8 +250,6 @@ function change_task_status($connect, $task_id, $task_status) {
     }
 
     $sql = 'UPDATE tasks SET status = ' . $task_status . ' WHERE id = ?';
-
-    var_dump($sql);
 
     $stmt = db_get_prepare_stmt($connect, $sql, [$task_id]);
     mysqli_stmt_execute($stmt);
