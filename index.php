@@ -31,16 +31,15 @@ if (isset($_GET['id'])) {
     } else {
         $project_id = intval($_GET['id']);
         $project = is_project($connect, $user_id, $project_id);
-    }
 
-    if (!is_numeric($_GET['id']) || $project) {
-        $tasks = get_tasks_data($connect, $user_id, $show_complete_tasks, $project_id);
-    } else {
-        http_response_code(404);
-        die();
+        if (!$project) {
+            http_response_code(404);
+            die();
+        }
     }
 } else {
     $_GET['id'] = 'all';
+    $project_id = $_GET['id'];
 }
 
 // Проверяем был ли передан параметр запроса c id задачи
