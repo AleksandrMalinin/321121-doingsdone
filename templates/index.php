@@ -14,9 +14,7 @@
     </nav>
 
     <label class="checkbox">
-        <?php $project = $_GET['id'] ?? ''; ?>
-
-        <a href="<?= !isset($_GET['show_completed']) ? '/index.php?id=' . $project . '&' . 'show_completed=is_checked' : '/index.php?id=' . $project; ?>">
+        <a href="/index.php?<?= generate_url($_GET); ?>">
             <input class="checkbox__input visually-hidden show_completed" type="checkbox"
             <?php if (isset($_GET['show_completed'])): ?>checked<?php endif ?>>
             <span class="checkbox__text">Показывать выполненные</span>

@@ -254,3 +254,18 @@ function change_task_status($connect, $task_id, $task_status) {
     $stmt = db_get_prepare_stmt($connect, $sql, [$task_id]);
     mysqli_stmt_execute($stmt);
 }
+
+// генерирует url
+function generate_url ($array) {
+    $show = '&show_completed=is_checked';
+
+    foreach ($array as $key => $value) {
+        $str = $key . '=' . $value;
+    }
+
+    if (!isset($array['show_completed'])) {
+        $str .= $show;
+    }
+
+    return $str;
+}
