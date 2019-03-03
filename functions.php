@@ -256,16 +256,25 @@ function change_task_status($connect, $task_id, $task_status) {
 }
 
 // генерирует url
-function generate_url ($array, $current) {
+function generate_url ($array, $key_current, $value_current) {
     $str = '';
 
     foreach ($array as $key => $value) {
-        if ($key === $current) {
+        // если и ключи и значения совпадают
+        if ($key === $key_current && $value === $value_current) {
             continue;
         }
 
-        $str .= $key . '=' . $value;
+        // если совпадают только ключи
+        if ($key === $key_current && $value !== $value_current) {
+            $value = $value_current;
+        }
+
+        $str .= $key . '=' . $value . '&';
     }
+
+    // обрезаем последний символ, &
+    // $str = substr($str, 0, -1);
 
     return $str;
 }
