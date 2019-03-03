@@ -256,15 +256,15 @@ function change_task_status($connect, $task_id, $task_status) {
 }
 
 // генерирует url
-function generate_url ($array) {
-    $show = '&show_completed=is_checked';
+function generate_url ($array, $current) {
+    $str = '';
 
     foreach ($array as $key => $value) {
-        $str = $key . '=' . $value;
-    }
+        if ($key === $current) {
+            continue;
+        }
 
-    if (!isset($array['show_completed'])) {
-        $str .= $show;
+        $str .= $key . '=' . $value;
     }
 
     return $str;

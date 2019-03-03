@@ -60,6 +60,9 @@ if (isset($_GET['show_completed'])) {
     $tasks = get_tasks_data($connect, $user_id, $show_complete_tasks, $project_id);
 }
 
+generate_url($_GET, 'show_completed');
+
+
 // Передаём массив с задачами в шаблон
 $page_content = include_template('index.php', ['show_complete_tasks' => $show_complete_tasks, 'tasks' => $tasks]);
 
