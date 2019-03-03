@@ -27,14 +27,14 @@ $random_tasks = get_tasks_quantity($connect, $user_id, 'incoming');
 if (isset($_GET['id'])) {
     // проверяем передана ли строка содержащая число
     if (!is_numeric($_GET['id'])) {
-        $id = $_GET['id'];
+        $project_id = $_GET['id'];
     } else {
-        $id = intval($_GET['id']);
-        $project = is_project($connect, $user_id, $id);
+        $project_id = intval($_GET['id']);
+        $project = is_project($connect, $user_id, $project_id);
     }
 
     if (!is_numeric($_GET['id']) || $project) {
-        $tasks = get_tasks_data($connect, $user_id, $show_complete_tasks, $id);
+        $tasks = get_tasks_data($connect, $user_id, $show_complete_tasks, $project_id);
     } else {
         http_response_code(404);
         die();
@@ -49,19 +49,16 @@ if (isset($_GET['task_id'])) {
     $task_status = intval($_GET['check']);
 
     change_task_status($connect, $task_id, $task_status);
-    $tasks = get_tasks_data($connect, $user_id, $show_complete_tasks);
 }
 
 // Проверяем был ли передан параметр запроса c для покаща всех пвыполненных задач
 if (isset($_GET['show_completed'])) {
     $project_id = !is_numeric($_GET['id']) ? $_GET['id'] : intval($_GET['id']);
     $show_complete_tasks = 1;
-
-    $tasks = get_tasks_data($connect, $user_id, $show_complete_tasks, $project_id);
 }
 
-generate_url($_GET, 'show_completed');
-
+// Получаем массив задач
+$tasks = get_tasks_data($connect, $user_id, $show_complete_tasks, $project_id);
 
 // Передаём массив с задачами в шаблон
 $page_content = include_template('index.php', ['show_complete_tasks' => $show_complete_tasks, 'tasks' => $tasks]);
