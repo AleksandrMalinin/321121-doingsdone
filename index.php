@@ -56,8 +56,15 @@ if (isset($_GET['show_completed'])) {
     $show_complete_tasks = 1;
 }
 
+if (isset($_GET['term'])) {
+    $term = $_GET['term'];
+    $project_id = !is_numeric($_GET['id']) ? $_GET['id'] : intval($_GET['id']);
+} else {
+    $term = NULL;
+}
+
 // Получаем массив задач
-$tasks = get_tasks_data($connect, $user_id, $show_complete_tasks, $project_id);
+$tasks = get_tasks_data($connect, $user_id, $show_complete_tasks, $project_id, $term);
 
 // Передаём массив с задачами в шаблон
 $page_content = include_template('index.php', ['show_complete_tasks' => $show_complete_tasks, 'tasks' => $tasks]);

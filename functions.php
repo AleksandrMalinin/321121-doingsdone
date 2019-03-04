@@ -155,7 +155,7 @@ function get_projects_data($connect, $user, $quantity) {
 }
 
 // делает запрос для задач, определяет тип для вывода (выполненная / невыполненная)
-function get_tasks_data($connect, $user, $bool, $id = false) {
+function get_tasks_data($connect, $user, $bool, $id = false, $date = false) {
     $additional_condition = ' AND status = ' . $bool;
     $null_condition = ' AND project_id IS NULL';
     $sql_tasks = 'SELECT * FROM tasks WHERE user_id = ?';
@@ -177,15 +177,40 @@ function get_tasks_data($connect, $user, $bool, $id = false) {
         $sql_tasks .= $additional_condition;
     }
 
+    // для фильтрации по датам
+    switch ($date) {
+        // сегодняшние
+        case 'today':
+            $date = date('Y-m-d');
+            $sql_tasks .= " AND date_deadline = '$date'";
+            break;
+
+        // завтрашние
+        case 'tommorow':
+            $date = date('Y-m-d 23:59:59', time() + 86400);
+            $sql_tasks .= " AND date_deadline = '$date'";
+            break;
+
+        // просроченные
+        case 'past':
+            $date = date('Y-m-d 23:59:59');
+            $sql_tasks .= " AND date_deadline < '$date'";
+            break;
+
+        // все
+        default:
+            break;
+    }
+
     return get_data($connect, $sql_tasks, $user);
 }
 
 // получает количество задач
-function get_tasks_quantity($connect, $user, $project = null) {
+function get_tasks_quantity($connect, $user, $project = NULL) {
     $sql_tasks = 'SELECT COUNT(*) FROM tasks WHERE user_id = ?';
-    $sql_null = ' && project_id IS NULL';
-    $sql_undone = ' && status = 0';
-    $sql_group_by = ' && project_id IS NOT NULL GROUP BY project_id';
+    $sql_null = ' AND project_id IS NULL';
+    $sql_undone = ' AND status = 0';
+    $sql_group_by = ' AND project_id IS NOT NULL GROUP BY project_id';
 
     switch ($project) {
         // общее количество невыполненных

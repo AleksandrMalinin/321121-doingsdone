@@ -43,7 +43,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if (!$date) {
             $errors['date'] = 'Заполните поле в указанном формате';
-        } else if (strtotime($form['date']) < time()) {
+        } else if (date('Y.m.d 23:59:59', strtotime($form['date'])) < date('Y.m.d 23:59:59')) {
             $errors['date'] = 'Дата должна быть больше текущей';
         } else {
             $deadline = date('Y.m.d 23:59:59', strtotime($form['date']));
