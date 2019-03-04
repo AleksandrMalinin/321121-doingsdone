@@ -5,8 +5,49 @@ require_once('./init.php');
 // Показывать или нет выполненные задачи
 $show_complete_tasks = 0;
 
+if (!isset($_GET['id'])) {
+    $_GET['id'] = 'all';
+}
+
+$project_id = $_GET['id'] ?? NULL;
+$task_id = $_GET['task_id'] ?? NULL;
+$show_completed = $_GET['show_completed'] ?? NULL;
+$term = $_GET['term'] ?? NULL;
+$check = $_GET['check'] ?? NULL;
+
 // Получаем имя текущего пользователя
 $users = get_users_data($connect, $user_id);
+
+// Проверяем был ли передан параметр запроса с id проекта
+if ($project_id) {
+    if (is_numeric($project_id)) {
+        $project_id = intval($project_id);
+        $project = is_project($connect, $user_id, $project_id);
+
+        if (!$project) {
+            http_response_code(404);
+            die();
+        }
+    }
+}
+
+// Проверяем был ли передан параметр запроса c id задачи
+if ($task_id) {
+    $task_id = intval($task_id);
+    $task_status = intval($check);
+
+    change_task_status($connect, $task_id, $task_status);
+}
+
+// Проверяем был ли передан параметр запроса c для покаща всех пвыполненных задач
+if ($show_completed) {
+    $project_id = !is_numeric($project_id) ? $project_id : intval($project_id);
+    $show_complete_tasks = 1;
+}
+
+if ($term) {
+    $project_id = !is_numeric($project_id) ? $project_id : intval($project_id);
+}
 
 // Получаем массив с количеством невыполненных заданий
 $tasks_quantity = get_tasks_quantity($connect, $user_id);
@@ -17,54 +58,14 @@ $projects = get_projects_data($connect, $user_id, $tasks_quantity);
 // Получаем массив задач
 $tasks = get_tasks_data($connect, $user_id, $show_complete_tasks);
 
+// Получаем массив задач
+$tasks = get_tasks_data($connect, $user_id, $show_complete_tasks, $project_id, $term);
+
 // Получаем общее количество задач (Все)
 $all_tasks = get_tasks_quantity($connect, $user_id, 'all');
 
 // Получаем количество задач без проектов (Входящие)
 $random_tasks = get_tasks_quantity($connect, $user_id, 'incoming');
-
-// Проверяем был ли передан параметр запроса с id проекта
-if (isset($_GET['id'])) {
-    // проверяем передана ли строка содержащая число
-    if (!is_numeric($_GET['id'])) {
-        $project_id = $_GET['id'];
-    } else {
-        $project_id = intval($_GET['id']);
-        $project = is_project($connect, $user_id, $project_id);
-
-        if (!$project) {
-            http_response_code(404);
-            die();
-        }
-    }
-} else {
-    $_GET['id'] = 'all';
-    $project_id = $_GET['id'];
-}
-
-// Проверяем был ли передан параметр запроса c id задачи
-if (isset($_GET['task_id'])) {
-    $task_id = intval($_GET['task_id']);
-    $task_status = intval($_GET['check']);
-
-    change_task_status($connect, $task_id, $task_status);
-}
-
-// Проверяем был ли передан параметр запроса c для покаща всех пвыполненных задач
-if (isset($_GET['show_completed'])) {
-    $project_id = !is_numeric($_GET['id']) ? $_GET['id'] : intval($_GET['id']);
-    $show_complete_tasks = 1;
-}
-
-if (isset($_GET['term'])) {
-    $term = $_GET['term'];
-    $project_id = !is_numeric($_GET['id']) ? $_GET['id'] : intval($_GET['id']);
-} else {
-    $term = NULL;
-}
-
-// Получаем массив задач
-$tasks = get_tasks_data($connect, $user_id, $show_complete_tasks, $project_id, $term);
 
 // Передаём массив с задачами в шаблон
 $page_content = include_template('index.php', ['show_complete_tasks' => $show_complete_tasks, 'tasks' => $tasks]);

@@ -285,18 +285,15 @@ function generate_url ($array, $key_current, $value_current) {
     $str = '';
 
     foreach ($array as $key => $value) {
-        // если и ключи и значения совпадают
-        if ($key === $key_current && $value === $value_current) {
+        // если ключи совпадают
+        if ($key === $key_current) {
             continue;
-        }
-
-        // если совпадают только ключи
-        if ($key === $key_current && $value !== $value_current) {
-            $value = $value_current;
         }
 
         $str .= $key . '=' . $value . '&';
     }
+
+    $str = substr($str, 0, -1);
 
     return $str;
 }

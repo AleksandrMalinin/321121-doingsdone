@@ -31,7 +31,7 @@
                         </div>
 
                         <div class="user-menu__data">
-                            <p><?= $user; ?></p>
+                            <p><?= strip_tags($user); ?></p>
                             <a href="/logout.php">Выйти</a>
                         </div>
                     <?php else: ?>
@@ -48,11 +48,13 @@
 
                     <nav class="main-navigation">
                         <ul class="main-navigation__list">
-                            <li class="main-navigation__list-item <?php if ($_GET['id'] === 'all'): ?>main-navigation__list-item--active<?php endif ?>">
+                            <?php $id = $_GET['id'] ?? NULL; ?>
+
+                            <li class="main-navigation__list-item <?php if ($id === 'all'): ?>main-navigation__list-item--active<?php endif ?>">
                                 <a class="main-navigation__list-item-link" href="/index.php?id=all">Все</a>
                                 <span class="main-navigation__list-item-count"><?= $tasks_all; ?></span>
                             </li>
-                            <li class="main-navigation__list-item <?php if ($_GET['id'] === 'incoming'): ?>main-navigation__list-item--active<?php endif ?>">
+                            <li class="main-navigation__list-item <?php if ($id === 'incoming'): ?>main-navigation__list-item--active<?php endif ?>">
                                 <a class="main-navigation__list-item-link" href="/index.php?id=incoming">Входящие</a>
                                 <span class="main-navigation__list-item-count"><?= $incoming; ?></span>
                             </li>
@@ -63,7 +65,7 @@
                         </ul>
                     </nav>
 
-                    <a class="button button--transparent button--plus content__side-button" href="/add-project.php" target="project_add">Добавить проект</a>
+                    <a class="button button--transparent button--plus content__side-button" href="/add-project.php">Добавить проект</a>
                 </section>
 
                 <main class="content__main">
