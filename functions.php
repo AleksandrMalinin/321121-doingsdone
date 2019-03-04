@@ -298,8 +298,5 @@ function generate_url ($array, $key_current, $value_current) {
         $str .= $key . '=' . $value . '&';
     }
 
-    // обрезаем последний символ, &
-    // $str = substr($str, 0, -1);
-
     return $str;
 }
