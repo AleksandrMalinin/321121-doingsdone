@@ -155,46 +155,58 @@ function get_projects_data($connect, $user, $quantity) {
 }
 
 // делает запрос для задач, определяет тип для вывода (выполненная / невыполненная)
-function get_tasks_data($connect, $user, $bool, $id = false, $date = false) {
-    $additional_condition = ' AND status = ' . $bool;
+function get_tasks_data($connect, $user, $status, $project_id = false, $deadline = false, $search = false) {
+    $search_condition = " AND MATCH(name) AGAINST('$search')";
+    // запрос для статуса задачи
+    $additional_condition = ' AND status = ' . $status;
+    // запрос для проектов которых нет в базе
     $null_condition = ' AND project_id IS NULL';
+    // начальный запрос
     $sql_tasks = 'SELECT * FROM tasks WHERE user_id = ?';
 
-    if ($id && is_int($id)) {
-        $sql_project_id = ' AND project_id = ' . $id;
+    // запрос если передан id проекта и это число
+    if ($project_id && is_int($project_id)) {
+        $sql_project_id = ' AND project_id = ' . $project_id;
         $sql_tasks .= $sql_project_id;
     }
 
-    if ($id === 'incoming') {
+    // запрос для типа 'Входящие'
+    if ($project_id === 'incoming') {
         $sql_tasks .= $null_condition;
     }
-
-    if ($id === 'all' && $bool) {
+    // запрос для типа 'Все'
+    if ($project_id === 'all' && $status) {
         $sql_tasks .= $additional_condition;
     }
 
-    if (!$bool) {
+    // запрос для выполненых задач
+    if (!$status) {
         $sql_tasks .= $additional_condition;
+    }
+
+    // запрос для поиска по имени задачи
+    if ($search) {
+        $sql_tasks .= $search_condition;
     }
 
     // для фильтрации по датам
-    switch ($date) {
+    switch ($deadline) {
         // сегодняшние
         case 'today':
-            $date = date('Y-m-d');
-            $sql_tasks .= " AND date_deadline = '$date'";
+            $deadline = date('Y-m-d');
+            $sql_tasks .= " AND date_deadline = '$deadline'";
             break;
 
         // завтрашние
         case 'tommorow':
-            $date = date('Y-m-d 23:59:59', time() + 86400);
-            $sql_tasks .= " AND date_deadline = '$date'";
+            $deadline = date('Y-m-d 23:59:59', time() + 86400);
+            $sql_tasks .= " AND date_deadline = '$deadline'";
             break;
 
         // просроченные
         case 'past':
-            $date = date('Y-m-d 23:59:59');
-            $sql_tasks .= " AND date_deadline < '$date'";
+            $deadline = date('Y-m-d 23:59:59');
+            $sql_tasks .= " AND date_deadline < '$deadline'";
             break;
 
         // все
@@ -267,15 +279,14 @@ function add_user($connect, $email, $name, $password) {
 }
 
 // меняет статус задачи
-function change_task_status($connect, $task_id, $task_status) {
-    if ($task_status) {
-        $task_status = 0;
+function change_task_status($connect, $task_id, $status) {
+    if ($status) {
+        $status = 0;
     } else {
-        $task_status = 1;
+        $status = 1;
     }
 
-    $sql = 'UPDATE tasks SET status = ' . $task_status . ' WHERE id = ?';
-
+    $sql = 'UPDATE tasks SET status = ' . $status . ' WHERE id = ?';
     $stmt = db_get_prepare_stmt($connect, $sql, [$task_id]);
     mysqli_stmt_execute($stmt);
 }
@@ -293,6 +304,7 @@ function generate_url ($array, $key_current, $value_current) {
         $str .= $key . '=' . $value . '&';
     }
 
+    // обрезаем последний символ (&)
     $str = substr($str, 0, -1);
 
     return $str;

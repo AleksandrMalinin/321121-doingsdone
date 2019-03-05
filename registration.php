@@ -7,7 +7,6 @@ $errors = [];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $form = $_POST;
-
     $required = ['email', 'password', 'name'];
 
     foreach ($required as $key) {
@@ -31,7 +30,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $errors['email'] = 'Пользователь с такой почтой уже зарегистрирован';
         } else {
             $password = password_hash($form['password'], PASSWORD_DEFAULT);
-
             $result = add_user($connect, $form['email'], $form['name'], $password);
         }
 

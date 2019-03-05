@@ -14,6 +14,7 @@ $task_id = $_GET['task_id'] ?? NULL;
 $show_completed = $_GET['show_completed'] ?? NULL;
 $term = $_GET['term'] ?? NULL;
 $check = $_GET['check'] ?? NULL;
+$search = $_GET['tasks_search'] ?? NULL;
 
 // Получаем имя текущего пользователя
 $users = get_users_data($connect, $user_id);
@@ -59,7 +60,7 @@ $projects = get_projects_data($connect, $user_id, $tasks_quantity);
 $tasks = get_tasks_data($connect, $user_id, $show_complete_tasks);
 
 // Получаем массив задач
-$tasks = get_tasks_data($connect, $user_id, $show_complete_tasks, $project_id, $term);
+$tasks = get_tasks_data($connect, $user_id, $show_complete_tasks, $project_id, $term, $search);
 
 // Получаем общее количество задач (Все)
 $all_tasks = get_tasks_quantity($connect, $user_id, 'all');

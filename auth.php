@@ -7,7 +7,6 @@ $errors = [];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $form = $_POST;
-
 	$required = ['email', 'password'];
 
     foreach ($required as $key) {

@@ -26,7 +26,6 @@ $random_tasks = get_tasks_quantity($connect, $user_id, 'incoming');
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $form = $_POST;
-
     $required = ['name'];
     $errors = [];
 
