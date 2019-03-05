@@ -28,7 +28,7 @@
                     </div>
 
                     <div class="user-menu__data">
-                        <p><?=$user; ?></p>
+                        <p><?= strip_tags($user); ?></p>
                         <a href="/logout.php">Выйти</a>
                     </div>
                 </div>
@@ -55,7 +55,7 @@
                     </ul>
                 </nav>
 
-                <a class="button button--transparent button--plus content__side-button" href="form-project.html">Добавить проект</a>
+                <a class="button button--transparent button--plus content__side-button" href="/add-project.php">Добавить проект</a>
             </section>
 
             <main class="content__main">
@@ -78,7 +78,7 @@
                             <option value="incoming">Входящие</option>
 
                             <?php foreach ($projects as $project): ?>
-                                <option value="<?= $project['id']; ?>"><?= $project['name']; ?></option>
+                                <option value="<?= $project['id']; ?>"><?= strip_tags($project['name']); ?></option>
                             <?php endforeach; ?>
                         </select>
                         <p class="form__message"><?= $classname ? $errors['project'] : ''; ?></p>
