@@ -57,9 +57,6 @@ $tasks_quantity = get_tasks_quantity($connect, $user_id);
 $projects = get_projects_data($connect, $user_id, $tasks_quantity);
 
 // Получаем массив задач
-$tasks = get_tasks_data($connect, $user_id, $show_complete_tasks);
-
-// Получаем массив задач
 $tasks = get_tasks_data($connect, $user_id, $show_complete_tasks, $project_id, $term, $search);
 
 // Получаем общее количество задач (Все)

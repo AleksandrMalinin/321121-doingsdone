@@ -193,7 +193,7 @@ function get_tasks_data($connect, $user, $status, $project_id = false, $deadline
     switch ($deadline) {
         // сегодняшние
         case 'today':
-            $deadline = date('Y-m-d');
+            $deadline = date('Y-m-d 23:59:59');
             $sql_tasks .= " AND date_deadline = '$deadline'";
             break;
 
@@ -223,26 +223,29 @@ function get_tasks_quantity($connect, $user, $project = NULL) {
     $sql_null = ' AND project_id IS NULL';
     $sql_undone = ' AND status = 0';
     $sql_group_by = ' AND project_id IS NOT NULL GROUP BY project_id';
+    $bool;
 
     switch ($project) {
         // общее количество невыполненных
         case 'all':
             $sql_tasks .= $sql_undone;
+            $bool = false;
             break;
 
         // без проекта
         case 'incoming':
             $sql_tasks .= $sql_undone . $sql_null;
+            $bool = false;
             break;
 
         // невыполненных по каждому проекту
         default:
             $sql_tasks .= $sql_undone . $sql_group_by;
-            return get_data($connect, $sql_tasks, $user);
+            $bool = true;
             break;
     }
 
-    return get_data($connect, $sql_tasks, $user, false);
+    return get_data($connect, $sql_tasks, $user, $bool);
 }
 
 // делает запрос для юзеров
@@ -280,13 +283,9 @@ function add_user($connect, $email, $name, $password) {
 
 // меняет статус задачи
 function change_task_status($connect, $task_id, $status) {
-    if ($status) {
-        $status = 0;
-    } else {
-        $status = 1;
-    }
-
+    $status = $status ? 0 : 1;
     $sql = 'UPDATE tasks SET status = ' . $status . ' WHERE id = ?';
+
     $stmt = db_get_prepare_stmt($connect, $sql, [$task_id]);
     mysqli_stmt_execute($stmt);
 }
