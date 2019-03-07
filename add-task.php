@@ -63,11 +63,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $file = NULL;
     // проверяет загружен ли файл, даёт ему новое имя, помещает в корень
-    if (is_uploaded_file($_FILES['preview']['tmp_name'])) {
+    if (isset($_FILES['preview']['name'])) {
         $tmp_name = $_FILES['preview']['tmp_name'];
         $file = $_FILES['preview']['name'];
-        $extension = pathinfo($file, PATHINFO_EXTENSION);
-        $file = uniqid() . "." . $extension;
         move_uploaded_file($tmp_name, '' . $file);
     }
 

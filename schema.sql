@@ -29,7 +29,7 @@ CREATE FULLTEXT INDEX tasks_search ON tasks(name);
 
 CREATE TABLE users (
   id INT AUTO_INCREMENT PRIMARY KEY,
-  date_register TIMESTAMP,
+  date_register TIMESTAMP CURRENT_TIMESTAMP,
   name VARCHAR(128) NOT NULL,
   email VARCHAR(64) NOT NULL UNIQUE,
   password VARCHAR(64) NOT NULL
