@@ -175,7 +175,7 @@ function get_tasks_data($connect, $user, $status, $project_id = false, $deadline
         $sql_tasks .= $null_condition;
     }
     // запрос для типа 'Все'
-    if ($project_id === 'all' && $status) {
+    if ($project_id === 'all' && !$status) {
         $sql_tasks .= $additional_condition;
     }
 
@@ -282,7 +282,7 @@ function add_user($connect, $email, $name, $password) {
 }
 
 // меняет статус задачи
-function change_task_status($connect, $task_id, $status = null) {
+function change_task_status($connect, $task_id, $status) {
     $status = $status ? 0 : 1;
     $sql = 'UPDATE tasks SET status = ' . $status . ' WHERE id = ?';
 
@@ -293,8 +293,6 @@ function change_task_status($connect, $task_id, $status = null) {
 // генерирует url
 function generate_url ($array, $key_current, $value_current) {
     $str = '';
-
-    var_dump($key_current);
 
     foreach ($array as $key => $value) {
         // если ключи совпадают

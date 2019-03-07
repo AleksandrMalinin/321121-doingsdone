@@ -46,6 +46,7 @@ if ($show_completed) {
     $show_complete_tasks = 1;
 }
 
+// Проверяем был ли передан параметр запроса c типом дэдлайна
 if ($term) {
     $project_id = !is_numeric($project_id) ? $project_id : intval($project_id);
 }
