@@ -17,6 +17,12 @@ function check_date_format($date) {
     return $result;
 }
 
+/**
+ * Подключает шаблон
+ * @param string $name имя шаблона
+ * @param array $data массив передаваемых данных
+ * @return string
+ */
 function include_template($name, $data) {
     $name = 'templates/' . $name;
     $result = '';
@@ -34,7 +40,12 @@ function include_template($name, $data) {
     return $result;
 }
 
-// проверяет задачу на срочность
+/**
+ * Определяет срочность задачи
+ * @param string $task_deadline_str дата дедлайна
+ * @param integer $status статус задачи (0 - невыполненная, 1 - выполненная)
+ * @return bool
+ */
 function check_urgency($task_deadline_str, $status) {
     $urgency = false;
 
@@ -56,7 +67,13 @@ function check_urgency($task_deadline_str, $status) {
     return $urgency;
 }
 
-// проверяет на существование проекта
+/**
+ * Проверяет существование проекта
+ * @param string $connect подключение к бд
+ * @param integer $user_id уникальный id пользователя
+ * @param string|integer $project id или название проекта
+ * @return bool
+ */
 function is_project($connect, $user_id, $project) {
     $sql_project = 'SELECT * FROM projects WHERE user_id = ? AND ';
     $sql_id = "id = '$project'";
@@ -70,7 +87,12 @@ function is_project($connect, $user_id, $project) {
     return $project;
 }
 
-// проверяет на существование email
+/**
+ * Проверяет существование электронной почты
+ * @param string $connect подключение к бд
+ * @param string $email уникальный email пользователя
+ * @return bool
+ */
 function is_email($connect, $email) {
     $email_escaped = mysqli_real_escape_string($connect, $email);
     $sql = "SELECT id FROM users WHERE email = '$email_escaped'";
@@ -79,7 +101,12 @@ function is_email($connect, $email) {
     return $result;
 }
 
-// проверяет на существование юзера
+/**
+ * Проверяет существование пользователя
+ * @param string $connect подключение к бд
+ * @param string $email уникальный email пользователя
+ * @return bool
+ */
 function is_user($connect, $email) {
     $email_escaped = mysqli_real_escape_string($connect, $email);
     $sql = "SELECT * FROM users WHERE email = '$email_escaped'";
@@ -88,7 +115,14 @@ function is_user($connect, $email) {
     return $result;
 }
 
-// получает массив данных
+/**
+ * Получает массив данных
+ * @param string $connect подключение к бд
+ * @param $sql $sql sql запрос
+ * @param string $user уникальный id пользователя
+ * @param bool $bool параметр определяющий тип получаемых данных (однострочный или многострочный)
+ * @return array
+ */
 function get_data($connect, $sql, $user, $bool = true) {
     $data = null;
 
@@ -111,14 +145,26 @@ function get_data($connect, $sql, $user, $bool = true) {
     return $data;
 }
 
-// подбирает функцию в зависимости от того многострочные даннные или нет
+/**
+ * Определяет функцию, которая будет использована для получения данных в зависимости от их типа
+ * @param bool $bool параметр определяющий тип получаемых данных (однострочный или многострочный)
+ * @param null $data параметр в который будут записаны данные
+ * @param string $result результат из подготовленного запроса
+ * @return array
+ */
 function check_multiline_data($bool, $data, $result) {
     $data = $bool ? mysqli_fetch_all($result, MYSQLI_ASSOC) : mysqli_fetch_assoc($result);
 
     return $data;
 }
 
-// делает запрос для проектов
+/**
+ * Получает данные по проектам
+ * @param string $connect подключение к бд
+ * @param string $user уникальный id пользователя
+ * @param array $quantity массив с количеством задач
+ * @return array
+ */
 function get_projects_data($connect, $user, $quantity) {
     $sql_projects = 'SELECT * FROM projects WHERE user_id = ?';
 
@@ -146,7 +192,16 @@ function get_projects_data($connect, $user, $quantity) {
     return $projects;
 }
 
-// делает запрос для задач, определяет тип для вывода (выполненная / невыполненная)
+/**
+ * Получает данные по задачам, определяет тип для вывода (выполненная / невыполненная)
+ * @param string $connect подключение к бд
+ * @param string $user уникальный id пользователя
+ * @param integer $status статус задачи (0 - невыполненная, 1 - выполненная)
+ * @param bool|string|integer $project_id id или название проекта
+ * @param string $deadline дата дедлайна
+ * @param string $search поисковый запрос
+ * @return ???
+ */
 function get_tasks_data($connect, $user, $status, $project_id = false, $deadline = false, $search = false) {
     $search_condition = " AND MATCH(name) AGAINST('$search')";
     // запрос для статуса задачи
@@ -205,7 +260,14 @@ function get_tasks_data($connect, $user, $status, $project_id = false, $deadline
     return get_data($connect, $sql_tasks, $user);
 }
 
-// получает количество задач
+/**
+ * Получает количество задач
+ * @param string $connect подключение к бд
+ * @param string $user уникальный id пользователя
+ * @param null|string $project id вкладок проектов ВСЕ и ВХОДЯЩИЕ
+ * @param bool|integer $bool статус задачи (0 - невыполненная, 1 - выполненная)
+ * @return ???
+ */
 function get_tasks_quantity($connect, $user, $project = NULL, $bool = false) {
     $sql_tasks = 'SELECT COUNT(*) FROM tasks WHERE user_id = ?';
     $sql_null = ' AND project_id IS NULL';
@@ -233,14 +295,28 @@ function get_tasks_quantity($connect, $user, $project = NULL, $bool = false) {
     return get_data($connect, $sql_tasks, $user, $bool);
 }
 
-// делает запрос для юзеров
+/**
+ * Получает данные пользователей
+ * @param string $connect подключение к бд
+ * @param string $user уникальный id пользователя
+ * @return ???
+ */
 function get_users_data($connect, $user) {
     $sql_users = 'SELECT name FROM users WHERE id = ?';
 
     return get_data($connect, $sql_users, $user, false);
 }
 
-// добавляет новую задачу
+/**
+ * Добавляет новую задачу в бд
+ * @param string $connect подключение к бд
+ * @param string $task название задачи
+ * @param string $user уникальный id пользователя
+ * @param null|string $deadline дата дедлайна
+ * @param null|integer $project id проекта
+ * @param null|string $file ссылка на загруженный файл
+ * @return void
+ */
 function add_task($connect, $task, $user, $deadline = NULL, $project = NULL, $file = NULL) {
     $sql = 'INSERT INTO tasks (name, user_id, date_deadline, project_id, file) VALUES (?, ?, ?, ?, ?)';
 
@@ -248,7 +324,13 @@ function add_task($connect, $task, $user, $deadline = NULL, $project = NULL, $fi
     mysqli_stmt_execute($stmt);
 }
 
-// добавляет новый проект
+/**
+ * Добавляет новый проект
+ * @param string $connect подключение в бд
+ * @param string $project название проекта
+ * @param string $user уникальный id пользователя
+ * @return void
+ */
 function add_project($connect, $project, $user) {
     $sql = 'INSERT INTO projects (name, user_id) VALUES (?, ?)';
 
@@ -256,7 +338,14 @@ function add_project($connect, $project, $user) {
     mysqli_stmt_execute($stmt);
 }
 
-// добавляет нового юзера
+/**
+ * Добавляет нового пользователя в бд
+ * @param string $connect подключение к бд
+ * @param string $email email пользователя
+ * @param string $name имя пользователя
+ * @param string $password захэшированный пароль пользователя
+ * @return bool
+ */
 function add_user($connect, $email, $name, $password) {
     $sql = 'INSERT INTO users (email, name, password) VALUES (?, ?, ?)';
 
@@ -266,7 +355,13 @@ function add_user($connect, $email, $name, $password) {
     return $result;
 }
 
-// меняет статус задачи
+/**
+ * Меняет статус задачи
+ * @param string $connect подключение к бд
+ * @param string $task_id id задачи
+ * @param integer $status статус задачи (0 - невыполненная, 1 - выполненная)
+ * @return void
+ */
 function change_task_status($connect, $task_id, $status) {
     $status = $status ? 0 : 1;
     $sql = 'UPDATE tasks SET status = ' . $status . ' WHERE id = ?';
@@ -275,8 +370,13 @@ function change_task_status($connect, $task_id, $status) {
     mysqli_stmt_execute($stmt);
 }
 
-// генерирует url
-function generate_url ($array, $key_current) {
+/**
+ * Генерирует url
+ * @param array $array массив GET запросов
+ * @param string $key_current текущий ключ запроса
+ * @return string
+ */
+function generate_url($array, $key_current) {
     $str = '';
 
     foreach ($array as $key => $value) {
