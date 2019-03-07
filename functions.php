@@ -74,7 +74,7 @@ function is_project($connect, $user_id, $project) {
     return $project;
 }
 
-// проверяет на существование email // TODO: Объединить в одну функцию
+// проверяет на существование email
 function is_email($connect, $email) {
     $email_escaped = mysqli_real_escape_string($connect, $email);
     $sql = "SELECT id FROM users WHERE email = '$email_escaped'";
@@ -83,7 +83,7 @@ function is_email($connect, $email) {
     return $result;
 }
 
-// проверяет на существование юзера // TODO: Объединить в одну функцию
+// проверяет на существование юзера
 function is_user($connect, $email) {
     $email_escaped = mysqli_real_escape_string($connect, $email);
     $sql = "SELECT * FROM users WHERE email = '$email_escaped'";
@@ -282,7 +282,7 @@ function add_user($connect, $email, $name, $password) {
 }
 
 // меняет статус задачи
-function change_task_status($connect, $task_id, $status) {
+function change_task_status($connect, $task_id, $status = null) {
     $status = $status ? 0 : 1;
     $sql = 'UPDATE tasks SET status = ' . $status . ' WHERE id = ?';
 
@@ -294,13 +294,13 @@ function change_task_status($connect, $task_id, $status) {
 function generate_url ($array, $key_current, $value_current) {
     $str = '';
 
+    var_dump($key_current);
+
     foreach ($array as $key => $value) {
         // если ключи совпадают
-        if ($key === $key_current) {
-            continue;
+        if ($key !== $key_current) {
+            $str .= $key . '=' . $value . '&';
         }
-
-        $str .= $key . '=' . $value . '&';
     }
 
     // обрезаем последний символ (&)
