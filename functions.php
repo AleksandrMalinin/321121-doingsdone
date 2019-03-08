@@ -74,15 +74,15 @@ function check_urgency($task_deadline_str, $status) {
  * @param string|integer $project id или название проекта
  * @return bool
  */
-function is_project($connect, $user_id, $project) {
-    $sql_project = 'SELECT * FROM projects WHERE user_id = ? AND ';
-    $sql_id = "id = '$project'";
-    $sql_name = "name = '$project'";// TODO:
+function is_project($connect, $user_id, $project_id) {
+    $sql_project = "SELECT * FROM projects WHERE user_id = ? AND ";
+    $sql_id = 'id = ?';
+    $sql_name = 'name = ?';
 
     // проверяет что задача ссылается на существующий проект
-    $sql_project = is_int($project) ? $sql_project . $sql_id : $sql_project . $sql_name;
+    $sql_project = is_int($project_id) ? $sql_project . $sql_id : $sql_project . $sql_name;
 
-    $project = get_data($connect, $sql_project, $user_id);
+    $project = get_data($connect, $sql_project, [$user_id, $project_id]);
 
     return $project;
 }
@@ -123,14 +123,12 @@ function is_user($connect, $email) {
  * @param bool $bool параметр определяющий тип получаемых данных (однострочный или многострочный)
  * @return array
  */
-function get_data($connect, $sql, $user, $bool = true) {
-    $data = null;
-
+function get_data($connect, $sql, $initial_data = [], $bool = true) {
     if (!$connect) {
         $error = mysqli_connect_error();
         print('Connection error: ' . $error);
     } else {
-        $stmt = db_get_prepare_stmt($connect, $sql, [$user]);
+        $stmt = db_get_prepare_stmt($connect, $sql, $initial_data);
         mysqli_stmt_execute($stmt);
         $result = mysqli_stmt_get_result($stmt);
 
@@ -138,7 +136,7 @@ function get_data($connect, $sql, $user, $bool = true) {
             $error = mysqli_error($connect);
             print('MYSQL error: ' . $error);
         } else {
-            $data = check_multiline_data($bool, $data, $result);
+            $data = check_multiline_data($bool, $result);
         }
     }
 
@@ -148,11 +146,10 @@ function get_data($connect, $sql, $user, $bool = true) {
 /**
  * Определяет функцию, которая будет использована для получения данных в зависимости от их типа
  * @param bool $bool параметр определяющий тип получаемых данных (однострочный или многострочный)
- * @param null $data параметр в который будут записаны данные
  * @param string $result результат из подготовленного запроса
  * @return array
  */
-function check_multiline_data($bool, $data, $result) {
+function check_multiline_data($bool, $result) {
     $data = $bool ? mysqli_fetch_all($result, MYSQLI_ASSOC) : mysqli_fetch_assoc($result);
 
     return $data;
@@ -168,7 +165,7 @@ function check_multiline_data($bool, $data, $result) {
 function get_projects_data($connect, $user, $quantity) {
     $sql_projects = 'SELECT * FROM projects WHERE user_id = ?';
 
-    $initial_projects = get_data($connect, $sql_projects, $user);
+    $initial_projects = get_data($connect, $sql_projects, [$user]);
     $projects = [];
 
     // если у юзера есть проекты
@@ -203,33 +200,37 @@ function get_projects_data($connect, $user, $quantity) {
  * @return array
  */
 function get_tasks_data($connect, $user, $status, $project_id = false, $deadline = false, $search = false) {
-    $search_condition = " AND MATCH(name) AGAINST('$search')";
-    // запрос для статуса задачи
-    $additional_condition = ' AND status = ' . $status;
-    // запрос для проектов которых нет в базе
-    $null_condition = ' AND project_id IS NULL';
+    $data[] = $user;
     // начальный запрос
     $sql_tasks = 'SELECT * FROM tasks WHERE user_id = ?';
 
     // запрос если передан id проекта и это число
     if ($project_id && is_int($project_id)) {
-        $sql_project_id = ' AND project_id = ' . $project_id;
+        $sql_project_id = ' AND project_id = ?';
         $sql_tasks .= $sql_project_id;
+        $data[] = $project_id;
     }
 
     // запрос для типа 'Входящие'
     if ($project_id === 'incoming') {
+        // запрос для проектов которых нет в базе
+        $null_condition = ' AND project_id IS NULL';
         $sql_tasks .= $null_condition;
     }
 
     // запрос для выполненых задач
     if (!$status) {
+        // запрос для статуса задачи
+        $additional_condition = ' AND status = ' . $status;
         $sql_tasks .= $additional_condition;
     }
 
     // запрос для поиска по имени задачи
     if ($search) {
+        // запрос для поиска по имени задачи
+        $search_condition = " AND MATCH(name) AGAINST(?)";
         $sql_tasks .= $search_condition;
+        $data[] = $search;
     }
 
     // для фильтрации по датам
@@ -257,7 +258,7 @@ function get_tasks_data($connect, $user, $status, $project_id = false, $deadline
             break;
     }
 
-    return get_data($connect, $sql_tasks, $user);
+    return get_data($connect, $sql_tasks, $data);
 }
 
 /**
@@ -292,7 +293,7 @@ function get_tasks_quantity($connect, $user, $project = NULL, $bool = false) {
             break;
     }
 
-    return get_data($connect, $sql_tasks, $user, $bool);
+    return get_data($connect, $sql_tasks, [$user], $bool);
 }
 
 /**
@@ -304,7 +305,7 @@ function get_tasks_quantity($connect, $user, $project = NULL, $bool = false) {
 function get_users_data($connect, $user) {
     $sql_users = 'SELECT name FROM users WHERE id = ?';
 
-    return get_data($connect, $sql_users, $user, false);
+    return get_data($connect, $sql_users, [$user], false);
 }
 
 /**
