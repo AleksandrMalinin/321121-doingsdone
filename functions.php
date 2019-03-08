@@ -200,7 +200,7 @@ function get_projects_data($connect, $user, $quantity) {
  * @param bool|string|integer $project_id id или название проекта
  * @param string $deadline дата дедлайна
  * @param string $search поисковый запрос
- * @return ???
+ * @return array
  */
 function get_tasks_data($connect, $user, $status, $project_id = false, $deadline = false, $search = false) {
     $search_condition = " AND MATCH(name) AGAINST('$search')";
@@ -266,7 +266,7 @@ function get_tasks_data($connect, $user, $status, $project_id = false, $deadline
  * @param string $user уникальный id пользователя
  * @param null|string $project id вкладок проектов ВСЕ и ВХОДЯЩИЕ
  * @param bool|integer $bool статус задачи (0 - невыполненная, 1 - выполненная)
- * @return ???
+ * @return array
  */
 function get_tasks_quantity($connect, $user, $project = NULL, $bool = false) {
     $sql_tasks = 'SELECT COUNT(*) FROM tasks WHERE user_id = ?';
@@ -299,7 +299,7 @@ function get_tasks_quantity($connect, $user, $project = NULL, $bool = false) {
  * Получает данные пользователей
  * @param string $connect подключение к бд
  * @param string $user уникальный id пользователя
- * @return ???
+ * @return array
  */
 function get_users_data($connect, $user) {
     $sql_users = 'SELECT name FROM users WHERE id = ?';
