@@ -363,11 +363,11 @@ function add_user($connect, $email, $name, $password) {
  * @param integer $status статус задачи (0 - невыполненная, 1 - выполненная)
  * @return void
  */
-function change_task_status($connect, $task_id, $status) {
+function change_task_status($connect, $user, $task_id, $status) {
     $status = $status ? 0 : 1;
-    $sql = 'UPDATE tasks SET status = ' . $status . ' WHERE id = ?';
+    $sql = 'UPDATE tasks SET status = ' . $status . ' WHERE user_id = ? AND id = ?';
 
-    $stmt = db_get_prepare_stmt($connect, $sql, [$task_id]);
+    $stmt = db_get_prepare_stmt($connect, $sql, [$user, $task_id]);
     mysqli_stmt_execute($stmt);
 }
 

@@ -37,7 +37,7 @@ if ($task_id) {
     $task_id = intval($task_id);
     $task_status = intval($check);
 
-    change_task_status($connect, $task_id, $task_status);
+    change_task_status($connect, $user_id, $task_id, $task_status);
 }
 
 // Проверяем был ли передан параметр запроса c для покаща всех пвыполненных задач
