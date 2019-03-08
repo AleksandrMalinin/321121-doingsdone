@@ -14,7 +14,7 @@ $task_id = $_GET['task_id'] ?? NULL;
 $show_completed = $_GET['show_completed'] ?? NULL;
 $term = $_GET['term'] ?? NULL;
 $check = $_GET['check'] ?? NULL;
-$search = $_GET['tasks_search'] ?? NULL;
+$search = isset($_GET['tasks_search']) && !empty(trim($_GET['tasks_search'])) ? trim($_GET['tasks_search']) : false;
 
 // Получаем имя текущего пользователя
 $users = get_users_data($connect, $user_id);
