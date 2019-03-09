@@ -392,3 +392,19 @@ function generate_url($array, $key_current) {
 
     return $str;
 }
+
+/**
+ * Получает данные (список срочных задач, почту и имя пользователя) для оповещения пользователя о предстоящих задачах
+ * @param string $connect подключение к бд
+ * @param array $data пустой массив
+ * @return array
+ */
+function get_data_for_notify($connect, $data) {
+    $sql = 'SELECT GROUP_CONCAT(t.name SEPARATOR ", ") list, u.email, u.name AS user_name
+            FROM tasks t JOIN users u ON t.user_id = u.id
+            WHERE DAY(t.date_deadline) = DAY(NOW())
+            AND t.status = 0
+            GROUP BY u.email';
+
+    return get_data($connect, $sql, $data);
+}
