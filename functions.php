@@ -214,22 +214,19 @@ function get_tasks_data($connect, $user, $status, $project_id = false, $deadline
     // запрос для типа 'Входящие'
     if ($project_id === 'incoming') {
         // запрос для проектов которых нет в базе
-        $null_condition = ' AND project_id IS NULL';
-        $sql_tasks .= $null_condition;
+        $sql_tasks .= ' AND project_id IS NULL';
     }
 
     // запрос для выполненых задач
     if (!$status) {
         // запрос для статуса задачи
-        $additional_condition = ' AND status = ' . $status;
-        $sql_tasks .= $additional_condition;
+        $sql_tasks .= ' AND status = ' . $status;
     }
 
     // запрос для поиска по имени задачи
     if ($search) {
         // запрос для поиска по имени задачи
-        $search_condition = " AND MATCH(name) AGAINST(?)";
-        $sql_tasks .= $search_condition;
+        $sql_tasks .= ' AND MATCH(name) AGAINST(?)';
         $data[] = $search;
     }
 
