@@ -382,7 +382,7 @@ function generate_url($array, $key_current) {
 
     foreach ($array as $key => $value) {
         // если ключи совпадают
-        if ($key !== $key_current && $key !== 'tasks_search') {
+        if ($key !== $key_current) {
             $str .= $key . '=' . $value . '&';
         }
     }
