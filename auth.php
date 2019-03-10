@@ -8,6 +8,7 @@ $errors = [];
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $form = $_POST;
 	$required = ['email', 'password'];
+    $result = NULL;
 
     foreach ($required as $key) {
         if (empty($form[$key])) {
@@ -19,7 +20,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!empty($form['email'])) {
         // проверяет валидность адреса почты
         $email = filter_var($form['email'], FILTER_VALIDATE_EMAIL);
-        $result = NULL;
 
         // если почта невалидна
         if (!$email) {
