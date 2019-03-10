@@ -27,11 +27,11 @@ $random_tasks = get_tasks_quantity($connect, $user_id, 'incoming');
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $form = $_POST;
     $required = ['name'];
-    $form_errors = [];
+    $errors = [];
 
     foreach ($required as $key) {
         if (empty($_POST[$key])) {
-            $form_errors[$key] = 'Заполните это поле';
+            $errors[$key] = 'Заполните это поле';
 		}
 	}
 
@@ -41,9 +41,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $date = check_date_format($form['date']);
 
         if (!$date) {
-            $form_errors['date'] = 'Заполните поле в указанном формате';
+            $errors['date'] = 'Заполните поле в указанном формате';
         } else if (date('Y.m.d 23:59:59', strtotime($form['date'])) < date('Y.m.d 23:59:59')) {
-            $form_errors['date'] = 'Дата должна быть больше текущей';
+            $errors['date'] = 'Дата должна быть больше текущей';
         } else {
             $deadline = date('Y.m.d 23:59:59', strtotime($form['date']));
         }
@@ -57,7 +57,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($project) {
             $project_id = intval($form['project']);
         } else {
-            $form_errors['project'] = 'Такого проекта не существует';
+            $errors['project'] = 'Такого проекта не существует';
         }
     }
 
@@ -69,9 +69,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         move_uploaded_file($tmp_name, '' . $file);
     }
 
-    if (count($form_errors)) {
+    if (count($errors)) {
     	$page_content = include_template('add-task.php', [
-            'errors' => $form_errors,
+            'errors' => $errors,
             'form' => $form,
             'projects' => $projects,
             'incoming' => $random_tasks['COUNT(*)'],

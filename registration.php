@@ -11,7 +11,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     foreach ($required as $key) {
         if (empty($form[$key])) {
-            $form_errors[$key] = 'Заполните это поле';
+            $errors[$key] = 'Заполните это поле';
         }
     }
 
@@ -19,27 +19,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = filter_var($form['email'], FILTER_VALIDATE_EMAIL);
 
     if (!$email) {
-        $form_errors['email'] = 'E-mail указан некорректно';
+        $errors['email'] = 'E-mail указан некорректно';
     }
 
-    if (empty($form_errors)) {
+    if (empty($errors)) {
         $result = is_email($connect, $form['email']);
 
         // если запрос возвращает результат
         if ($result) {
-            $form_errors['email'] = 'Пользователь с такой почтой уже зарегистрирован';
+            $errors['email'] = 'Пользователь с такой почтой уже зарегистрирован';
         } else {
             $password = password_hash($form['password'], PASSWORD_DEFAULT);
             $result = add_user($connect, $form['email'], $form['name'], $password);
         }
 
-        if ($result && empty($form_errors)) {
+        if ($result && empty($errors)) {
             header('Location: /');
             exit();
         }
     }
 
-    $errors = $form_errors;
     $data = $form;
 }
 
