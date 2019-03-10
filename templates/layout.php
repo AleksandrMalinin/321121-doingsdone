@@ -51,11 +51,11 @@
                             <?php $id = $_GET['id'] ?? NULL; ?>
 
                             <li class="main-navigation__list-item <?php if ($id === 'all'): ?>main-navigation__list-item--active<?php endif ?>">
-                                <a class="main-navigation__list-item-link" href="/index.php?id=all">Все</a>
+                                <a class="main-navigation__list-item-link" href="/index.php?id=all&<?= generate_url($_GET, 'id'); ?>">Все</a>
                                 <span class="main-navigation__list-item-count"><?= $tasks_all; ?></span>
                             </li>
                             <li class="main-navigation__list-item <?php if ($id === 'incoming'): ?>main-navigation__list-item--active<?php endif ?>">
-                                <a class="main-navigation__list-item-link" href="/index.php?id=incoming">Входящие</a>
+                                <a class="main-navigation__list-item-link" href="/index.php?id=incoming&<?= generate_url($_GET, 'id'); ?>">Входящие</a>
                                 <span class="main-navigation__list-item-count"><?= $incoming; ?></span>
                             </li>
 

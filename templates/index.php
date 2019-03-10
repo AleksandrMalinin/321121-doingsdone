@@ -14,18 +14,18 @@
 
         <a href="/" class="tasks-switch__item <?php if(!isset($_GET['term'])): ?>tasks-switch__item--active<?php endif ?>">Все задачи</a>
 
-        <a href="/index.php?<?= generate_url($_GET, 'term', 'today'); ?>&term=today"
+        <a href="/index.php?<?= generate_url($_GET, 'term'); ?>&term=today"
             class="tasks-switch__item <?php if ($term === 'today'): ?>tasks-switch__item--active<?php endif ?>">Повестка дня</a>
 
-        <a href="/index.php?<?= generate_url($_GET, 'term', 'tommorow'); ?>&term=tommorow"
+        <a href="/index.php?<?= generate_url($_GET, 'term'); ?>&term=tommorow"
             class="tasks-switch__item <?php if ($term === 'tommorow'): ?>tasks-switch__item--active<?php endif ?>">Завтра</a>
 
-        <a href="/index.php?<?= generate_url($_GET, 'term', 'past'); ?>&term=past"
+        <a href="/index.php?<?= generate_url($_GET, 'term'); ?>&term=past"
             class="tasks-switch__item <?php if ($term === 'past'): ?>tasks-switch__item--active<?php endif ?>">Просроченные</a>
     </nav>
 
     <label class="checkbox">
-        <a href="/index.php?<?= generate_url($_GET, 'show_completed', 'is_checked'); ?><?php if (empty($show_completed)): ?>&show_completed=is_checked<?php endif ?>">
+        <a href="/index.php?<?= generate_url($_GET, 'show_completed'); ?><?php if (empty($show_completed)): ?>&show_completed=is_checked<?php endif ?>">
             <input class="checkbox__input visually-hidden show_completed" type="checkbox"
             <?php if ($show_completed): ?>checked<?php endif ?>>
             <span class="checkbox__text">Показывать выполненные</span>

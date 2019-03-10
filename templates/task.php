@@ -15,7 +15,7 @@
 
     <td class="task__file">
         <?php if (!empty($task['file'])): ?>
-            <a class="download-link" href="<?= $task['file']; ?>">Home.psd</a>
+            <a class="download-link" href="<?= $task['file']; ?>"><?= $task['file']; ?></a>
         <?php endif ?>
     </td>
 

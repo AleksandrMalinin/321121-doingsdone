@@ -1,0 +1,15 @@
+{
+    "name": "bogart/doingsdone",
+    "description": "web-service for managing todo list",
+    "type": "project",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "AleksandrMalinin",
+            "email": "alexander.s.malinin@gmail.com"
+        }
+    ],
+    "require": {
+        "swiftmailer/swiftmailer": "^6.1"
+    }
+}
