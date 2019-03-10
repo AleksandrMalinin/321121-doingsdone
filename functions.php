@@ -25,7 +25,6 @@ function check_date_format($date) {
  */
 function include_template($name, $data) {
     $name = 'templates/' . $name;
-    $result = '';
 
     if (!is_readable($name)) {
         return '<div class="error-message">Template is not found</div>';
@@ -69,45 +68,54 @@ function check_urgency($task_deadline_str, $status) {
 
 /**
  * Проверяет существование проекта
- * @param string $connect подключение к бд
+ * @param mysqli $connect подключение к бд
  * @param integer $user_id уникальный id пользователя
  * @param string|integer $project id или название проекта
  * @return bool
  */
 function is_project($connect, $user_id, $project_id) {
+    $bool = false;
     $sql_project = "SELECT * FROM projects WHERE user_id = ? AND ";
     $sql_id = 'id = ?';
     $sql_name = 'name = ?';
 
     // проверяет что задача ссылается на существующий проект
     $sql_project = is_int($project_id) ? $sql_project . $sql_id : $sql_project . $sql_name;
-
     $project = get_data($connect, $sql_project, [$user_id, $project_id]);
 
-    return $project;
+    if ($project) {
+        $bool = true;
+    }
+
+    return $bool;
 }
 
 /**
  * Проверяет существование электронной почты
- * @param string $connect подключение к бд
+ * @param mysqli $connect подключение к бд
  * @param string $email уникальный email пользователя
  * @return bool
  */
 function is_email($connect, $email) {
+    $bool = false;
     $email_escaped = mysqli_real_escape_string($connect, $email);
     $sql = "SELECT id FROM users WHERE email = '$email_escaped'";
     $result = mysqli_query($connect, $sql);
 
-    return $result;
+    if (mysqli_num_rows($result) > 0) {
+        $bool = true;
+    }
+
+    return $bool;
 }
 
 /**
  * Проверяет существование пользователя
- * @param string $connect подключение к бд
+ * @param mysqli $connect подключение к бд
  * @param string $email уникальный email пользователя
- * @return bool
+ * @return mysqli_result
  */
-function is_user($connect, $email) {
+function check_user_existence($connect, $email) {
     $email_escaped = mysqli_real_escape_string($connect, $email);
     $sql = "SELECT * FROM users WHERE email = '$email_escaped'";
     $result = mysqli_query($connect, $sql);
@@ -117,9 +125,9 @@ function is_user($connect, $email) {
 
 /**
  * Получает массив данных
- * @param string $connect подключение к бд
+ * @param mysqli $connect подключение к бд
  * @param $sql $sql sql запрос
- * @param string $user уникальный id пользователя
+ * @param array $initial_data массив c данными
  * @param bool $bool параметр определяющий тип получаемых данных (однострочный или многострочный)
  * @return array
  */
@@ -157,7 +165,7 @@ function check_multiline_data($bool, $result) {
 
 /**
  * Получает данные по проектам
- * @param string $connect подключение к бд
+ * @param mysqli $connect подключение к бд
  * @param string $user уникальный id пользователя
  * @param array $quantity массив с количеством задач
  * @return array
@@ -191,12 +199,12 @@ function get_projects_data($connect, $user, $quantity) {
 
 /**
  * Получает данные по задачам, определяет тип для вывода (выполненная / невыполненная)
- * @param string $connect подключение к бд
+ * @param mysqli $connect подключение к бд
  * @param string $user уникальный id пользователя
  * @param integer $status статус задачи (0 - невыполненная, 1 - выполненная)
  * @param bool|string|integer $project_id id или название проекта
- * @param string $deadline дата дедлайна
- * @param string $search поисковый запрос
+ * @param bool|string $deadline дата дедлайна
+ * @param bool|string $search поисковый запрос
  * @return array
  */
 function get_tasks_data($connect, $user, $status, $project_id = false, $deadline = false, $search = false) {
@@ -260,7 +268,7 @@ function get_tasks_data($connect, $user, $status, $project_id = false, $deadline
 
 /**
  * Получает количество задач
- * @param string $connect подключение к бд
+ * @param mysqli $connect подключение к бд
  * @param string $user уникальный id пользователя
  * @param null|string $project id вкладок проектов ВСЕ и ВХОДЯЩИЕ
  * @param bool|integer $bool статус задачи (0 - невыполненная, 1 - выполненная)
@@ -295,7 +303,7 @@ function get_tasks_quantity($connect, $user, $project = NULL, $bool = false) {
 
 /**
  * Получает данные пользователей
- * @param string $connect подключение к бд
+ * @param mysqli $connect подключение к бд
  * @param string $user уникальный id пользователя
  * @return array
  */
@@ -307,7 +315,7 @@ function get_users_data($connect, $user) {
 
 /**
  * Добавляет новую задачу в бд
- * @param string $connect подключение к бд
+ * @param mysqli $connect подключение к бд
  * @param string $task название задачи
  * @param string $user уникальный id пользователя
  * @param null|string $deadline дата дедлайна
@@ -324,7 +332,7 @@ function add_task($connect, $task, $user, $deadline = NULL, $project = NULL, $fi
 
 /**
  * Добавляет новый проект
- * @param string $connect подключение в бд
+ * @param mysqli $connect подключение в бд
  * @param string $project название проекта
  * @param string $user уникальный id пользователя
  * @return void
@@ -338,7 +346,7 @@ function add_project($connect, $project, $user) {
 
 /**
  * Добавляет нового пользователя в бд
- * @param string $connect подключение к бд
+ * @param mysqli $connect подключение к бд
  * @param string $email email пользователя
  * @param string $name имя пользователя
  * @param string $password захэшированный пароль пользователя
@@ -355,7 +363,8 @@ function add_user($connect, $email, $name, $password) {
 
 /**
  * Меняет статус задачи
- * @param string $connect подключение к бд
+ * @param mysqli $connect подключение к бд
+ * @param string $user уникальный id пользователя
  * @param string $task_id id задачи
  * @param integer $status статус задачи (0 - невыполненная, 1 - выполненная)
  * @return void
@@ -392,7 +401,7 @@ function generate_url($array, $key_current) {
 
 /**
  * Получает данные (список срочных задач, почту и имя пользователя) для оповещения пользователя о предстоящих задачах
- * @param string $connect подключение к бд
+ * @param mysqli $connect подключение к бд
  * @param array $data пустой массив
  * @return array
  */

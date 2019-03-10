@@ -19,5 +19,5 @@
         <?php endif ?>
     </td>
 
-    <td class="task__date"><?= strip_tags($task['date_deadline']); ?></td>
+    <td class="task__date"><?= strip_tags(date('d.m.Y', strtotime($task['date_deadline']))); ?></td>
 </tr>

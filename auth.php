@@ -11,7 +11,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     foreach ($required as $key) {
         if (empty($form[$key])) {
-            $errors[$key] = 'Заполните это поле';
+            $form_errors[$key] = 'Заполните это поле';
         }
     }
 
@@ -19,33 +19,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!empty($form['email'])) {
         // проверяет валидность адреса почты
         $email = filter_var($form['email'], FILTER_VALIDATE_EMAIL);
+        $result = NULL;
 
+        // если почта невалидна
         if (!$email) {
-            $errors['email'] = 'E-mail указан некорректно';
+            $form_errors['email'] = 'E-mail указан некорректно';
+        } else {
+            $result = check_user_existence($connect, $email);
+            $user = $result ? mysqli_fetch_array($result, MYSQLI_ASSOC) : NULL;
         }
     }
 
-    if (empty($errors)) {
-        $result = is_user($connect, $form['email']);
-        $user = $result ? mysqli_fetch_array($result, MYSQLI_ASSOC) : NULL;
-
-        if ($user) {
-            if (password_verify($form['password'], $user['password'])) {
-    			$_SESSION['user'] = $user;
-            } else {
-    			$errors['password'] = 'Неверный пароль';
-    		}
-    	} else {
-    		$errors['email'] = 'Такой пользователь не найден';
-    	}
-
-        if ($result && empty($errors)) {
-            header("Location: /");
-            exit();
+    if ($user) {
+        if (password_verify($form['password'], $user['password'])) {
+            $_SESSION['user'] = $user;
+        } else {
+            $form_errors['password'] = 'Неверный пароль';
+        }
+    } else {
+        if (empty($form_errors)) {
+            $form_errors['email'] = 'Такой пользователь не найден';
         }
     }
 
-    $errors = $errors;
+    if ($result && empty($form_errors)) {
+        header("Location: /");
+        exit();
+    }
+
+    $errors = $form_errors;
     $data = $form;
 }
 

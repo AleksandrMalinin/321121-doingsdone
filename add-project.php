@@ -25,10 +25,10 @@ $random_tasks = get_tasks_quantity($connect, $user_id, 'incoming');
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $form = $_POST;
     $required = ['name'];
-    $errors = [];
+    $form_errors = [];
 
     if (empty($form['name'])) {
-        $errors['name'] = 'Заполните это поле';
+        $form_errors['name'] = 'Заполните это поле';
 	}
 
     if (!empty($form['name'])) {
@@ -36,13 +36,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $project = is_project($connect, $user_id, $form['name']);
 
         if ($project) {
-            $errors['name'] = 'Такой проект уже существует';
+            $form_errors['name'] = 'Такой проект уже существует';
         }
     }
 
-    if (count($errors)) {
+    if (count($form_errors)) {
     	$page_content = include_template('add-project.php', [
-            'errors' => $errors,
+            'errors' => $form_errors,
             'projects' => $projects,
             'incoming' => $random_tasks['COUNT(*)'],
             'tasks_all' => $all_tasks['COUNT(*)'],
